@@ -1,1 +1,8 @@
 Here we go, this is a game, we are gonna make it, woooo
+
+OK I am just gonna write down the order of git commands to add and commit here:
+git add . //the dot is for everything in the folder, I guess you can also just do one part
+
+git commit -m "this is where a comment goes"
+
+git pus //this is the one that sends it to the site actually
