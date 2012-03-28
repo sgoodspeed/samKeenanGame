@@ -1,8 +1,16 @@
 Here we go, this is a game, we are gonna make it, woooo
 
-OK I am just gonna write down the order of git commands to add and commit here:
+OK I am just gonna write down the order of git commands here (probably these are also online?):
+
+
 git add . //the dot is for everything in the folder, I guess you can also just do one part
 
 git commit -m "this is where a comment goes"
 
 git pus //this is the one that sends it to the site actually
+
+git stash //hides all the changes you've made locally
+
+git checkout ______ //designates which branch you are working on
+
+git checkout -b _______ //creates a branch, I am pretty sure?
