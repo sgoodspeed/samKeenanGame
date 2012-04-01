@@ -7,7 +7,7 @@ git add . //the dot is for everything in the folder, I guess you can also just d
 
 git commit -m "this is where a comment goes"
 
-git pus //this is the one that sends it to the site actually
+git push //this is the one that sends it to the site actually
 
 git stash //hides all the changes you've made locally
 
