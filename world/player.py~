@@ -1,0 +1,9 @@
+import pygame
+from pygame.locals import *
+
+class Player(object):
+    def move(self, direction):
+        print "player moves %d, %d" % direction
+
+    def jump(self):
+        print "player jumps"
