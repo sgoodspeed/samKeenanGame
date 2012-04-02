@@ -8,7 +8,11 @@ __Level/environment design__: The game is set in a haunted Victorian mansion tha
 
 __Gameplay__: Gameplay consists of two main elements: Fighting and cleaning. When the player enters a room, there will be eldritch monsters to defeat before they rip the poor robot limb from limb. Once safe, the player must use problem solving to get the various messes (corpses, puddles, broken furniture, gore, etc) in the room clean before proceeding. The player will run across various electronics and other devices throughout the house that the robot is able to integrate into itself, therefore upgrading and adding new functionality to the robot.  
 
+<<<<<<< HEAD
 __Art__: We are commissioning art from Sam's friend. 
+=======
+__Art__: We are commissioning art from a professional artist. 
+>>>>>>> revised art section of design doc
 
 __Sound and Music__: TBD.  
 
