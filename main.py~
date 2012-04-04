@@ -4,14 +4,10 @@ import pygame
 from pygame.locals import *
 
 from core.input import InputManager, KeyListener, MouseListener
+from world.player import *
 
 # world/player.py
-class Player(object):
-    def move(self, direction):
-        print "player moves %d, %d" % direction
 
-    def jump(self):
-        print "player jumps"
 
 
 # core/sound.py
@@ -29,6 +25,10 @@ class PlayerController(KeyListener, MouseListener):
     def on_keydown(self, event):
         if event.key == K_SPACE:
             self.player.jump()
+        if event.key == K_LEFT:
+            self.player.moveLeft()
+        if event.key == K_RIGHT:
+            self.player.move()
 
     def on_motion(self, event):
         self.player.move( event.rel )
@@ -58,6 +58,8 @@ class Game(object):
 
     def __init__(self):
         pygame.init()
+        pygame.key.set_repeat(100,100)
+        clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode(self.size)
 
         self.input = InputManager()

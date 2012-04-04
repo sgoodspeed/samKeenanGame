@@ -26,12 +26,12 @@ class PlayerController(KeyListener, MouseListener):
         if event.key == K_SPACE:
             self.player.jump()
         if event.key == K_LEFT:
-            self.player.moveLeft()
+            self.player.move(-1)
         if event.key == K_RIGHT:
-            self.player.move()
+            self.player.move(1)
 
-    def on_motion(self, event):
-        self.player.move( event.rel )
+    #def on_motion(self, event):
+     #   self.player.move( event.rel )
 
 
 
@@ -65,6 +65,8 @@ class Game(object):
         self.input = InputManager()
 
         self.player = Player()
+        self.playerGroup = pygame.sprite.GroupSingle(self.player)
+        
         self.sounds = SoundManager()
         
         pc = PlayerController(self.player)
@@ -91,13 +93,17 @@ class Game(object):
                 else:
                     self.input.handle_event(event)
 
-        # update
-
-        # draw
-        self.screen.fill((0,0,0))
-        pygame.display.flip()
+            # update
+        
+            # draw
+            self.screen.fill((0,0,0))
+            #print "Made it here"
+            self.playerGroup.draw(self.screen)
+            pygame.display.flip()
 
 
 if __name__ == "__main__":
     game = Game()
     game.run()
+
+pygame.quit()
