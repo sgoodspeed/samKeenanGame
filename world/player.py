@@ -11,16 +11,16 @@ class Player(Sprite):
         self.rect = Rect(self.startPos,self.width,self.height)
         self.image = Surface(self.rect.size)
         self.image.fill((0,0,0))
-        self.image.set_colorkey((0,0,0))
+        self.image.set_colorkey((0,0,0))#probably don't want this later
 
         #Figuring out draw needs to happen not here, dude
         pygame.draw.ellipse(self.image, (0,0,255), self.image.get_rect())
     def moveLeft(self):
-        dir = (-speed,0)
-        self.move(dir)
+        direc = (-speed,0)
+        self.move(direc)
     def moveRight(self):
-        dir = (speed,0)
-        self.move(dir)
+        direc = (speed,0)
+        self.move(direc)
     
     def move(self, direction):
         self.rect.x+=direction[0]

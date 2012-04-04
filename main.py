@@ -28,7 +28,7 @@ class PlayerController(KeyListener, MouseListener):
         if event.key == K_LEFT:
             self.player.moveLeft()
         if event.key == K_RIGHT:
-            self.player.moveRight()
+            self.player.move()
 
     def on_motion(self, event):
         self.player.move( event.rel )
