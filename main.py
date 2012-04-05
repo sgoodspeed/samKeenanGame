@@ -1,19 +1,23 @@
 #!/usr/bin/env python
-
+import os
 import pygame
 from pygame.locals import *
 
 from core.input import InputManager, KeyListener, MouseListener
 from world.player import *
+from tiles import *
+from pygame.sprite import *
 
-# world/player.py
+
+
 
 
 
 # core/sound.py
 class SoundManager(object):
     def play(self, which):
-        print "playing %s sound" % which
+        pass
+        #print "playing %s sound" % which
 
 
 # controls/player.py
@@ -23,12 +27,17 @@ class PlayerController(KeyListener, MouseListener):
         self.player = player
 
     def on_keydown(self, event):
-        if event.key == K_SPACE:
+        if event.key == K_SPACE and self.player.jumping <2:
             self.player.jump()
+#Note to future selves: You guys look handsome and you should figure out key repeat exemptions
         if event.key == K_LEFT:
             self.player.move(-1)
         if event.key == K_RIGHT:
             self.player.move(1)
+
+    def on_keyup(self,event):
+        if event.key == K_LEFT or event.key == K_RIGHT:
+            self.player.vX = 0
 
     #def on_motion(self, event):
      #   self.player.move( event.rel )
@@ -55,11 +64,12 @@ class SfxController(KeyListener):
 
 class Game(object):
     size = 800, 600
+    fps = 30
 
     def __init__(self):
         pygame.init()
         pygame.key.set_repeat(100,100)
-        clock = pygame.time.Clock()
+        self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode(self.size)
 
         self.input = InputManager()
@@ -76,6 +86,10 @@ class Game(object):
         sc = SfxController(self.sounds, self)
         self.input.add_key_listener(sc)
 
+        self.img_tiles = load_image("tiles", (0,255,200))
+        self.tilesheet = TileSheet(self.img_tiles, (32, 32))
+        self.level = Level("test_level", self.tilesheet)
+        
     def paused(self):
         return False
 
@@ -87,6 +101,7 @@ class Game(object):
         self._done = False
 
         while not self._done:
+            self.clock.tick(self.fps)
             for event in pygame.event.get():
                 if event.type == QUIT:
                     self.quit()
@@ -94,10 +109,15 @@ class Game(object):
                     self.input.handle_event(event)
 
             # update
-        
+            dT = self.clock.get_time()
+            
+            #self.playerGroup.update(dT)
+            self.player.update(dT)
+            
+            
             # draw
             self.screen.fill((0,0,0))
-            #print "Made it here"
+            self.screen.blit(self.level.image,(0,0))
             self.playerGroup.draw(self.screen)
             pygame.display.flip()
 
