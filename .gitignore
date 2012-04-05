@@ -14,7 +14,12 @@
 .Spotlight-V100
 .Trashes
 
+# Compiled Python files
 *.py[co]
+*.pyc
+
+# Emacs stuff
+*.py~
 
 # Packages
 *.egg
