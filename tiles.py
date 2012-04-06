@@ -4,7 +4,7 @@ import os
 import pygame
 from pygame.locals import *
 
-## Loading resources
+# This just loads the tilemap image from data/images/[name].bmp
 def load_image(name, colorkey=None):
     path = os.path.join("data", "images", name) + ".bmp"
 
@@ -16,6 +16,7 @@ def load_image(name, colorkey=None):
 
 ## Tilesheet class
 class TileSheet(object):
+    # This defines what character in the .lvl file correspondes to which position in the tilemap image
     _map = {
         "~": (20,30),   # grass
         "%": (20,150),  # flower
@@ -23,10 +24,11 @@ class TileSheet(object):
     }
 
     def __init__(self, image, size):
-        self.image = image
+        self.image = image # This is the tilemap image
         self.w,self.h = size
 
         # rebuild map
+        # Not sure what this does exactly
         self.tilemap = {}
         for tile,coord in self._map.items():
             if coord:
@@ -49,6 +51,7 @@ class TileSheet(object):
         return surf
         
 # Level class
+# This holds the actual final rendered image of the level according to the .lvl file, rendered with tiles from the tilemap image
 class Level(object):
     def __init__(self, name, tilesheet):
         path = os.path.join("data", "levels", name) + ".lvl"
@@ -59,6 +62,12 @@ class Level(object):
         self.image = tilesheet.render(data)
 
 
+
+
+
+
+
+############## This is just example code, we don't use anything from here down #############
 ## Main Game
 def main():
     # init pygame
