@@ -53,7 +53,7 @@ class TileSheet(object):
         rows = len(data)
         cols = len(data[0])
         size = (cols * self.w, rows * self.h)
-        tileGroup = pygame.sprite.Group()
+        tileGroup = Group()
         
         # render each tile in it
         for y, row in enumerate(data):
