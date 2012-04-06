@@ -7,11 +7,13 @@ class Player(Sprite):
     width = 20
     height = 40
     size = width,height
-    startPos = 100,534
+    startPos = 100,504
     speed = 200
     vX = 0
     vY = 0
     jumping = 0
+    decay = 0
+    gravity = True
     
     def __init__(self):
         Sprite.__init__(self)
@@ -28,23 +30,43 @@ class Player(Sprite):
         
     def jump(self):
         # Like move(), this doesn't actually do the jumping, it just sets up the variables and tells the player that it is now jumping. Update does the heavy lifting.
-        self.vY = 550
-        if self.jumping == 0:
-            self.startY = self.rect.y
+        self.vY = 350
         self.decay = 1
-        self.jumping += 1    
+        self.jumping += 1
+        self.gravity = True    
     
-    def update(self, dT, level):
+    def update(self, dT, level):                    
         dT /= 1000.0
         # Deal with jumping
         # If the player is currently jumping, move the player according to current Y velocity and then decrease y velocity.
         # Y velocity will continue to decrease until it's negative, thus making the player go up, slow down, and fall back down.
-        if self.jumping >= 1:
-            dY = int(self.vY*dT)
-            self.rect.y -= dY
-            self.decay += 2
+        if self.gravity:
             self.vY -= self.decay
+            if self.decay < 32:
+                self.decay += 2
+            
+        
+        #if self.jumping >= 1:
+        dY = int(self.vY*dT)
+        self.rect.y -= dY
         
         # Now deal with movement in the X direction
         dX = int(self.vX*dT)
         self.rect.x+=dX
+        
+        for tile in level.tiles:
+            if tile.isSolid:
+                if (tile.rect.collidepoint(self.rect.bottomleft) or tile.rect.collidepoint(self.rect.bottomright)) and not tile.rect.collidepoint(self.rect.topright) and not tile.rect.collidepoint(self.rect.topleft):
+                    self.gravity = False
+                    self.jumping = 0
+                    self.rect.bottom = tile.rect.top
+                if tile.rect.collidepoint(self.rect.topleft) or tile.rect.collidepoint(self.rect.topright) and self.jumping > 0:
+                    self.vY = 0
+                    #self.rect.top = tile.rect.bottom
+                    self.decay += 2
+                if tile.rect.collidepoint(self.rect.topleft):
+                    self.vX = 0
+                    self.rect.left += 2
+                if tile.rect.collidepoint(self.rect.topright):
+                    self.vX = 0
+                    self.rect.right -= 2
