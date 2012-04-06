@@ -54,6 +54,7 @@ class Player(Sprite):
         dX = int(self.vX*dT)
         self.rect.x+=dX
         
+        # Collision stuff
         for tile in level.tiles:
             if tile.isSolid:
                 if (tile.rect.collidepoint(self.rect.bottomleft) or tile.rect.collidepoint(self.rect.bottomright)) and not tile.rect.collidepoint(self.rect.topright) and not tile.rect.collidepoint(self.rect.topleft):
