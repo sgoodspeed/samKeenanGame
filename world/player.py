@@ -7,7 +7,7 @@ class Player(Sprite):
     width = 20
     height = 40
     size = width,height
-    startPos = 20,539
+    startPos = 20,500
     speed = 100
     vX = 0
     vY = 0

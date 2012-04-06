@@ -13,6 +13,8 @@ class SoundManager(object):
 class Application(object):
     title = None
     screen_size = 800, 600
+    hudRect = ((0,0,screen_size[0],40))
+    gameRect = ((0,40,screen_size[0],screen_size[1]-40))
     screen_flags = DOUBLEBUF|HWSURFACE|SRCALPHA
     fps = 30
     pause_key = K_p
@@ -24,8 +26,17 @@ class Application(object):
 
     def __init__(self):
         pygame.init()
+        #Scree init
         self.screen = pygame.display.set_mode(self.screen_size, self.screen_flags)
+        #Subsurfaces
+        self.hud = self.screen.subsurface(self.hudRect)
+        self.gameArea = self.screen.subsurface(self.gameRect)
+
+        
+
+        #Clock
         self.clock = pygame.time.Clock()
+        
         if self.title:
             pygame.display.set_caption(self.title)
         

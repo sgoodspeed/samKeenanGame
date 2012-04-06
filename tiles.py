@@ -60,6 +60,8 @@ class Level(object):
         f.close()
 
         self.image = tilesheet.render(data)
+        self.bounds = self.image.get_rect()
+        
 
 
 

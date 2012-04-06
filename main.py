@@ -9,6 +9,7 @@ from core.app import Application
 from world.player import *
 from tiles import *
 from pygame.sprite import *
+from core.cameraJunk.camera import *
 
 
 # controls/player.py
@@ -45,9 +46,6 @@ class Game(Application):
     def __init__(self):
         Application.__init__(self)
         
-        # Set key repeat
-        pygame.key.set_repeat(100,100)
-        
         # Create player and put it in a spritegroup
         self.player = Player()
         self.playerGroup = pygame.sprite.GroupSingle(self.player)
@@ -65,16 +63,22 @@ class Game(Application):
         self.tilesheet = TileSheet(self.img_tiles, (32, 32))
         self.level = Level("test_level", self.tilesheet)
 
+        #Camera init
+        self.cam = Camera(self.player,self.level.bounds,self.gameArea.get_size())
+
     def update(self):
         # update
         dT = self.clock.get_time()
-        self.playerGroup.update(dT)            
+        
+        self.playerGroup.update(dT)
+
+        self.cam.update(self.player.rect)
     
     def draw(self, screen):
         # draw
-        screen.fill((0,0,0)) # Refresh screen
-        screen.blit(self.level.image,(0,0)) # Draw the tile background
-        self.playerGroup.draw(screen) # Draw the player
+
+        self.cam.draw_background(self.gameArea, self.level.image)
+        self.cam.draw_sprite(self.gameArea, self.player)
         pygame.display.flip() # Refresh the screen
 
 
@@ -84,3 +88,9 @@ if __name__ == "__main__":
 
 pygame.quit()
 print "Program complete"
+
+
+
+#screen.fill((0,0,0)) # Refresh screen
+#screen.blit(self.level.image,(0,0)) # Draw the tile background
+#self.playerGroup.draw(screen) # Draw the player
