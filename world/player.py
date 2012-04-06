@@ -28,59 +28,18 @@ class Player(Sprite):
         
     def jump(self):
         # Like move(), this doesn't actually do the jumping, it just sets up the variables and tells the player that it is now jumping. Update does the heavy lifting.
-        self.vY = 350
+        self.vY = 550
         if self.jumping == 0:
             self.startY = self.rect.y
         self.decay = 1
         self.jumping += 1    
     
     def update(self, dT, level):
-        # Stop if it hits a solid tile
-        onGround = False
-        for rect in level.solids:
-            if self.rect.colliderect(rect) and rect.top > self.rect.top and self.jumping > 0:
-                self.rect.bottom = rect.top-1
-                self.vY = 0
-                self.jumping = 0
-                onGround = True
-                print "onground true"
-            if self.rect.colliderect(rect) and rect.bottom < self.rect.bottom and self.jumping > 0:
-                self.vY -= self.vY*2
-            if self.rect.colliderect(rect) and rect.left > self.rect.left:
-                self.rect.left -= 5
-                self.vX = 0
-            if self.rect.colliderect(rect) and rect.right > self.rect.right:
-                self.rect.right += self.width
-                self.vX = 0
-                
-        if not onGround and self.jumping <= 0:
-            self.vY = -10
-            """
-            this is some code that doesn't work
-            # Can't jump through ceilings
-            if rect.collidepoint(self.rect.topleft) and rect.collidepoint(self.rect.bottomleft):
-                self.vX = 0;
-                print "left"
-            elif rect.collidepoint(self.rect.topright) and rect.collidepoint(self.rect.bottomright):
-                self.vX = 0
-                print "right"
-            elif rect.collidepoint(self.rect.topleft) and rect.collidepoint(self.rect.topright):
-                    self.rect.top = rect.bottom
-                    self.vY -= self.vY*2
-                    print "top"
-            # Stop falling if we hit the floor and end the jump routine
-            elif rect.collidepoint(self.rect.bottomleft) and rect.collidepoint(self.rect.bottomright):
-                    print "bottom"
-                    #if self.jumping > 0 and self.vY < 0:
-                    self.rect.bottom = rect.top
-                    self.vY = 0
-                    self.jumping = 0"""
-    
         dT /= 1000.0
         # Deal with jumping
         # If the player is currently jumping, move the player according to current Y velocity and then decrease y velocity.
         # Y velocity will continue to decrease until it's negative, thus making the player go up, slow down, and fall back down.
-        if self.jumping>=1:
+        if self.jumping >= 1:
             dY = int(self.vY*dT)
             self.rect.y -= dY
             self.decay += 2

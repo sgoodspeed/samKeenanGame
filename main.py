@@ -62,6 +62,9 @@ class Game(Application):
         self.img_tiles = load_image("tiles", (0,255,200))
         self.tilesheet = TileSheet(self.img_tiles, (32, 32))
         self.level = Level("test_level", self.tilesheet)
+        
+        # Create the group of solids
+        
 
         #Camera init
         self.cam = Camera(self.player,self.level.bounds,self.gameArea.get_size())
@@ -70,15 +73,13 @@ class Game(Application):
         # update
         dT = self.clock.get_time()
         
-        self.playerGroup.update(dT)
-
         self.cam.update(self.player.rect)
         self.playerGroup.update(dT, self.level)            
     
     def draw(self, screen):
         # draw
 
-        self.cam.draw_background(self.gameArea, self.level.image)
+        self.cam.draw_background(self.gameArea, self.level.background)
         self.cam.draw_sprite(self.gameArea, self.player)
         pygame.display.flip() # Refresh the screen
 

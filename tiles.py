@@ -3,6 +3,7 @@ import os
 
 import pygame
 from pygame.locals import *
+from pygame.sprite import *
 from pygame import Surface,Rect,draw
 
 # This just loads the tilemap image from data/images/[name].bmp
@@ -15,19 +16,30 @@ def load_image(name, colorkey=None):
     return image
 
 
+## Tile class
+class Tile(Sprite):
+    def __init__(self, tileImage, isSolid, x, y, tileSize = (32,32)):
+        Sprite.__init__(self)
+        self.isSolid = isSolid
+        self.w,self.h = tileSize
+        self.rect = Rect(x, y, self.w, self.h)
+        self.image = Surface(self.rect.size)
+        self.image.blit(tileImage, self.rect)
+        
+
 ## Tilesheet class
 class TileSheet(object):
     # This defines what character in the .lvl file correspondes to which position in the tilemap image
+     # PUT THIS IN A SETTINGS FILE
     _map = {
         "~": (20,30),   # grass
         "%": (20,150),  # flower
         ".": (210,50)   # path
     }
-
     def __init__(self, image, size):
         self.image = image # This is the tilemap image
         self.w,self.h = size
-        self.allRects = []
+        self.solids = []
         # rebuild map
         # Not sure what this does exactly
         self.tilemap = {}
@@ -40,19 +52,17 @@ class TileSheet(object):
         # create level image
         rows = len(data)
         cols = len(data[0])
-        surf = pygame.Surface((cols * self.w, rows * self.h))
+        size = (cols * self.w, rows * self.h)
+        tileGroup = pygame.sprite.Group()
         
         # render each tile in it
         for y, row in enumerate(data):
             for x, cell in enumerate(row):
                 tile = self.tilemap.get(cell)
                 if tile:
-                    surf.blit(tile, (x*self.w, y*self.h))
-                    # We're going to add a rect to the TileSheet surf here if the tile is "path". This is a prototype for making floors, etc.
-                    if cell == ".":
-                        currRect = Rect(x*self.w, y*self.h, self.w, self.h)
-                        self.allRects.append(currRect)
-        return surf, self.allRects
+                    isSolid = cell != "."
+                    tileGroup.add(Tile(tile, isSolid, x*self.w, y*self.h))
+        return tileGroup, size
         
 # Level class
 # This holds the actual final rendered image of the level according to the .lvl file, rendered with tiles from the tilemap image
@@ -62,9 +72,15 @@ class Level(object):
         f = open(path, "r")
         data = f.read().replace("\r", "").strip().split("\n")
         f.close()
-
-        self.image, self.solids = tilesheet.render(data)
-        self.bounds = self.image.get_rect()
+        
+        self.tiles, size = tilesheet.render(data)
+        self.bounds = Rect((0,0), size)
+        
+        self.render_background()
+    
+    def render_background(self):
+        self.background = Surface(self.bounds.size)
+        self.tiles.draw(self.background)
 
 
 
