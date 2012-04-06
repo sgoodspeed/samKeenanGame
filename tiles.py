@@ -18,13 +18,12 @@ def load_image(name, colorkey=None):
 
 ## Tile class
 class Tile(Sprite):
-    def __init__(self, tileImage, isSolid, x, y, tileSize = (32,32)):
+    def __init__(self, tileImage, isSolid, x, y):
         Sprite.__init__(self)
         self.isSolid = isSolid
-        self.w,self.h = tileSize
-        self.rect = Rect(x, y, self.w, self.h)
-        self.image = Surface(self.rect.size)
-        self.image.blit(tileImage, self.rect)
+        self.image = tileImage
+        self.rect = tileImage.get_rect()
+        self.rect.topleft = (x,y)
         
 
 ## Tilesheet class
@@ -38,10 +37,9 @@ class TileSheet(object):
     }
     def __init__(self, image, size):
         self.image = image # This is the tilemap image
-        self.w,self.h = size
-        self.solids = []
-        # rebuild map
-        # Not sure what this does exactly
+        self.w,self.h = size # The size of each tile
+        
+        # Build a dictionary that pairs characters with tiles in the tilemap
         self.tilemap = {}
         for tile,coord in self._map.items():
             if coord:
@@ -50,18 +48,21 @@ class TileSheet(object):
 
     def render(self, data):
         # create level image
+        # Data is the .lvl file
         rows = len(data)
         cols = len(data[0])
-        size = (cols * self.w, rows * self.h)
+        size = (cols * self.w, rows * self.h) # The size of the level is the number of rows and cols in the .lvl file times the height and width of each tile
         tileGroup = Group()
         
-        # render each tile in it
+        # Loop through the .lvl file
         for y, row in enumerate(data):
             for x, cell in enumerate(row):
-                tile = self.tilemap.get(cell)
-                if tile:
-                    isSolid = cell != "."
-                    tileGroup.add(Tile(tile, isSolid, x*self.w, y*self.h))
+                # Get the image that corresponds to this cell
+                tileImage = self.tilemap.get(cell)
+                if tileImage:
+                    isSolid = cell == "." # If the cell is a ".", then it should be solid
+                    tile = Tile(tileImage, isSolid, x*self.w, y*self.h)
+                    tileGroup.add(tile) # Create a Tile object with the correct image
         return tileGroup, size
         
 # Level class
