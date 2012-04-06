@@ -1,8 +1,9 @@
-#!/usr/bin/env python
+#! /usr/bin/env python
 import os
 
 import pygame
 from pygame.locals import *
+from pygame import Surface,Rect,draw
 
 # This just loads the tilemap image from data/images/[name].bmp
 def load_image(name, colorkey=None):
@@ -26,7 +27,7 @@ class TileSheet(object):
     def __init__(self, image, size):
         self.image = image # This is the tilemap image
         self.w,self.h = size
-
+        self.allRects = []
         # rebuild map
         # Not sure what this does exactly
         self.tilemap = {}
@@ -47,8 +48,11 @@ class TileSheet(object):
                 tile = self.tilemap.get(cell)
                 if tile:
                     surf.blit(tile, (x*self.w, y*self.h))
-
-        return surf
+                    # We're going to add a rect to the TileSheet surf here if the tile is "path". This is a prototype for making floors, etc.
+                    if cell == ".":
+                        currRect = Rect(x*self.w, y*self.h, self.w, self.h)
+                        self.allRects.append(currRect)
+        return surf, self.allRects
         
 # Level class
 # This holds the actual final rendered image of the level according to the .lvl file, rendered with tiles from the tilemap image
@@ -59,7 +63,8 @@ class Level(object):
         data = f.read().replace("\r", "").strip().split("\n")
         f.close()
 
-        self.image = tilesheet.render(data)
+        self.image, self.solids = tilesheet.render(data)
+        self.bounds = self.image.get_rect()
 
 
 

@@ -18,7 +18,7 @@ class PlayerController(KeyListener, MouseListener):
         self.player = player
 
     def on_keydown(self, event):
-        if event.key == K_SPACE and self.player.jumping <2:
+        if event.key == K_SPACE and self.player.jumping < 2:
             self.player.jump() #Note to future selves: You guys look handsome and you should figure out key repeat exemptions for jumping so that holding space doesn't double jump
         if event.key == K_LEFT:
             self.player.move(-1)
@@ -68,7 +68,7 @@ class Game(Application):
     def update(self):
         # update
         dT = self.clock.get_time()
-        self.playerGroup.update(dT)            
+        self.playerGroup.update(dT, self.level)            
     
     def draw(self, screen):
         # draw
