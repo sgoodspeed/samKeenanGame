@@ -23,3 +23,8 @@ class Camera(object):
     def draw_sprite(self, surf, sprite):
         if self.rect.colliderect(sprite.rect):
             surf.blit(sprite.image, rel_rect(sprite.rect, self.rect))
+            
+    def draw_sprite_group(self, surf, group):
+        for sprite in group:
+            if self.rect.colliderect(sprite.rect):
+                surf.blit(sprite.image, rel_rect(sprite.rect, self.rect))

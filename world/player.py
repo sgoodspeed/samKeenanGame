@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 from pygame.sprite import *
 from pygame import Surface,Rect,draw
+from projectiles import Bullet
 
 class Player(Sprite):
     width = 20
@@ -25,8 +26,13 @@ class Player(Sprite):
         self.image.set_colorkey((0,0,0)) # Probably don't want this later
         draw.rect(self.image, (0,0,255), self.image.get_rect()) # This draws the visible blue rectangle (We only draw this image once. Then, the spritegroup that Player is a part of moves the player's Surface (which has the image we just drew) around)
         
+        self.direction = 1
+        
+        self.bullets = Group()
+        
     def move(self, direction):
         self.vX = direction * self.speed # This doesn't actually MOVE anything, it just sets velocity
+        self.direction = direction
         
     def jump(self):
         # Like move(), this doesn't actually do the jumping, it just sets up the variables and tells the player that it is now jumping. Update does the heavy lifting.
@@ -54,19 +60,26 @@ class Player(Sprite):
         dX = int(self.vX*dT)
         self.rect.x+=dX
         
-        for tile in level.tiles:
-            if tile.isSolid:
-                if (tile.rect.collidepoint(self.rect.bottomleft) or tile.rect.collidepoint(self.rect.bottomright)) and not tile.rect.collidepoint(self.rect.topright) and not tile.rect.collidepoint(self.rect.topleft):
-                    self.gravity = False
-                    self.jumping = 0
-                    self.rect.bottom = tile.rect.top
-                if tile.rect.collidepoint(self.rect.topleft) or tile.rect.collidepoint(self.rect.topright) and self.jumping > 0:
-                    self.vY = 0
-                    #self.rect.top = tile.rect.bottom
-                    self.decay += 2
-                if tile.rect.collidepoint(self.rect.topleft):
-                    self.vX = 0
-                    self.rect.left += 2
-                if tile.rect.collidepoint(self.rect.topright):
-                    self.vX = 0
-                    self.rect.right -= 2
+        self.bullets.update(dT)
+        
+        for tile in level.solidTiles:
+            if (tile.rect.collidepoint(self.rect.bottomleft) or tile.rect.collidepoint(self.rect.bottomright)) and not tile.rect.collidepoint(self.rect.topright) and not tile.rect.collidepoint(self.rect.topleft):
+                self.gravity = False
+                self.jumping = 0
+                self.rect.bottom = tile.rect.top
+            if tile.rect.collidepoint(self.rect.topleft) or tile.rect.collidepoint(self.rect.topright) and self.jumping > 0:
+                self.vY = 0
+                #self.rect.top = tile.rect.bottom
+                self.decay += 2
+            if tile.rect.collidepoint(self.rect.topleft):
+                self.vX = 0
+                self.rect.left += 2
+            if tile.rect.collidepoint(self.rect.topright):
+                self.vX = 0
+                self.rect.right -= 2
+        groupcollide(self.bullets, level.solidTiles, True, False)
+                    
+                    
+    def shoot(self):
+        bullet = Bullet(self.rect.x, self.rect.y, self.direction, 0)
+        self.bullets.add(bullet)

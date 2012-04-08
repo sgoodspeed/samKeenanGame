@@ -25,6 +25,8 @@ class PlayerController(KeyListener, MouseListener):
             self.player.move(-1)
         if event.key == K_RIGHT:
             self.player.move(1)
+        if event.key == K_z:
+            self.player.shoot()
 
     def on_keyup(self,event):
         if event.key == K_LEFT or event.key == K_RIGHT:
@@ -81,6 +83,7 @@ class Game(Application):
 
         self.cam.draw_background(self.gameArea, self.level.background)
         self.cam.draw_sprite(self.gameArea, self.player)
+        self.cam.draw_sprite_group(self.gameArea, self.player.bullets)
         pygame.display.flip() # Refresh the screen
 
 

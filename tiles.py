@@ -53,6 +53,7 @@ class TileSheet(object):
         cols = len(data[0])
         size = (cols * self.w, rows * self.h) # The size of the level is the number of rows and cols in the .lvl file times the height and width of each tile
         tileGroup = Group()
+        solidTileGroup = Group()
         
         # Loop through the .lvl file
         for y, row in enumerate(data):
@@ -62,8 +63,10 @@ class TileSheet(object):
                 if tileImage:
                     isSolid = cell == "." # If the cell is a ".", then it should be solid
                     tile = Tile(tileImage, isSolid, x*self.w, y*self.h)
+                    if isSolid:
+                        solidTileGroup.add(tile)
                     tileGroup.add(tile) # Create a Tile object with the correct image
-        return tileGroup, size
+        return tileGroup, solidTileGroup, size
         
 # Level class
 # This holds the actual final rendered image of the level according to the .lvl file, rendered with tiles from the tilemap image
@@ -74,7 +77,7 @@ class Level(object):
         data = f.read().replace("\r", "").strip().split("\n")
         f.close()
         
-        self.tiles, size = tilesheet.render(data)
+        self.tiles, self.solidTiles, size = tilesheet.render(data)
         self.bounds = Rect((0,0), size)
         
         self.render_background()
