@@ -16,9 +16,17 @@ class Bullet(Sprite):
         self.dirY = dirY
         self.dirX = dirX
     
-    def update(self, dT):        
+    def update(self, dT, level):        
         dY = int(self.dirY*self.speed*dT)
         self.rect.y -= dY
         
         dX = int(self.dirX*self.speed*dT)
         self.rect.x+=dX
+        
+        # Kill if we hit a solid tile
+        if spritecollideany(self, level.solidTiles):
+            self.kill()
+        
+        # Kill if we're out of the level
+        if not level.bounds.contains(self.rect):
+            self.kill()

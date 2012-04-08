@@ -60,7 +60,7 @@ class Player(Sprite):
         dX = int(self.vX*dT)
         self.rect.x+=dX
         
-        self.bullets.update(dT)
+        self.bullets.update(dT, level)
         
         for tile in level.solidTiles:
             if (tile.rect.collidepoint(self.rect.bottomleft) or tile.rect.collidepoint(self.rect.bottomright)) and not tile.rect.collidepoint(self.rect.topright) and not tile.rect.collidepoint(self.rect.topleft):
@@ -77,7 +77,6 @@ class Player(Sprite):
             if tile.rect.collidepoint(self.rect.topright):
                 self.vX = 0
                 self.rect.right -= 2
-        groupcollide(self.bullets, level.solidTiles, True, False)
                     
                     
     def shoot(self):
