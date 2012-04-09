@@ -41,7 +41,6 @@ class Player(Sprite):
 
     def touches(self, group):
         touching = Group()
-        coll = self.rect.inflate(1,1) # grow 1px to allow for edges
         coll = self.rect
         for sprite in group:
             if coll.colliderect(sprite.rect):
@@ -66,24 +65,30 @@ class Player(Sprite):
             rect = sprite.rect 
 
             # collide with walls
-            if self.rect.left <= rect.right and prev_rect.left >= rect.right:
-                self.rect.left = rect.right
-            if self.rect.right >= rect.left and prev_rect.right <= rect.left:
-                self.rect.right = rect.left
             if rect.top < self.rect.bottom-2:
+                if self.rect.left <= rect.right and prev_rect.left >= rect.right:
+                    self.rect.left = rect.right
+                if self.rect.right >= rect.left and prev_rect.right <= rect.left:
+                    self.rect.right = rect.left
+
 
             # handle cielings
-            if self.rect.top <= rect.bottom and prev_rect.top >= rect.bottom:
-                self.vY /= 2.0   # halve speed from hitting head
-                self.rect.top = rect.bottom
+            if rect.left < self.rect.right and self.rect.left < rect.right:
+                if self.rect.top <= rect.bottom and prev_rect.top >= rect.bottom:
+                    self.vY /= 2.0   # halve speed from hitting head
+                    self.rect.top = rect.bottom
 
             # handle landing
             if self.rect.bottom >= rect.top and prev_rect.bottom <= rect.top:
-                self.vY = 0
-                self.rect.bottom = rect.top-1
-                self.jumping = 0
+                if self.jumping == 0:
+                    self.vY = 0
                     self.rect.bottom = rect.top
+                    self.jumping = 0
+                elif self.jumping > 0 and not ((self.rect.left <= rect.right and prev_rect.left >= rect.right) or (self.rect.right >= rect.left and prev_rect.right <= rect.left)):
+                    self.jumping = 0
                     self.rect.bottom = rect.top
+                    
+                    
 
                     
     def shoot(self):
