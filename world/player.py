@@ -6,7 +6,7 @@ from projectiles import Bullet
 
 class Player(Sprite):
     width = 20
-    height = 40
+    height = 20
     size = width,height
     startPos = 100,504
     speed = 200
@@ -37,29 +37,32 @@ class Player(Sprite):
     def jump(self):
         # Like move(), this doesn't actually do the jumping, it just sets up the variables and tells the player that it is now jumping. Update does the heavy lifting.
         self.vY = 350
-        self.decay = 1
-        self.jumping += 1
-        self.gravity = True    
-    
-    def update(self, dT, level):                    
-        dT /= 1000.0
-        # Deal with jumping
-        # If the player is currently jumping, move the player according to current Y velocity and then decrease y velocity.
-        # Y velocity will continue to decrease until it's negative, thus making the player go up, slow down, and fall back down.
-        if self.gravity:
-            self.vY -= self.decay
-            if self.decay < 32:
-                self.decay += 2
-            
+        self.jumping +=1
+
+    def touches(self, group):
+        touching = Group()
+        coll = self.rect.inflate(1,1) # grow 1px to allow for edges
+        for sprite in group:
+            if coll.colliderect(sprite.rect):
+                touching.add(sprite)
+        return touching
+
+    def update(self, dT,level):
+        dT = dT / 1000.0
         
-        #if self.jumping >= 1:
-        dY = int(self.vY*dT)
-        self.rect.y -= dY
+
+       
+        self.vY -= dT * 600
+        dX = self.vX * dT
+        dY = -self.vY * dT
+
+        # update position
+        prev_rect = self.rect
+        self.rect = self.rect.move(dX, dY)
+        self.rect.clamp_ip(level.bounds)   # temp error
+
         
-        # Now deal with movement in the X direction
-        dX = int(self.vX*dT)
-        self.rect.x+=dX
-        
+<<<<<<< HEAD
         self.bullets.update(dT, level)
         
         for tile in level.solidTiles:
@@ -82,3 +85,25 @@ class Player(Sprite):
     def shoot(self):
         bullet = Bullet(self.rect.x, self.rect.y, self.direction, 0)
         self.bullets.add(bullet)
+=======
+        for sprite in self.touches(level.solidTiles):
+            rect = sprite.rect 
+
+            # collide with walls
+            if self.rect.left <= rect.right and prev_rect.left >= rect.right:
+                self.rect.left = rect.right
+            if self.rect.right >= rect.left and prev_rect.right <= rect.left:
+                self.rect.right = rect.left
+
+            # handle cielings
+            if self.rect.top <= rect.bottom and prev_rect.top >= rect.bottom:
+                self.vY /= 2.0   # halve speed from hitting head
+                self.rect.top = rect.bottom
+
+            # handle landing
+            if self.rect.bottom >= rect.top and prev_rect.bottom <= rect.top:
+                self.vY = 0
+                self.rect.bottom = rect.top-1
+                self.jumping = 0
+                
+>>>>>>> a04938321450db2f7b1ddd1ec9b8496e5db05a94
