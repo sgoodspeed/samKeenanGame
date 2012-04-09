@@ -18,12 +18,13 @@ def load_image(name, colorkey=None):
 
 ## Tile class
 class Tile(Sprite):
-    def __init__(self, tileImage, isSolid, x, y):
+    def __init__(self, tileImage, isSolid, x, y, tileType):
         Sprite.__init__(self)
         self.isSolid = isSolid
         self.image = tileImage
         self.rect = tileImage.get_rect()
         self.rect.topleft = (x,y)
+        self.tileType = tileType
         
 
 ## Tilesheet class
@@ -33,8 +34,11 @@ class TileSheet(object):
     _map = {
         "~": (395,236),   # grass
         "%": (385,289),  # flower
-        ".": (192,96)   # path
+        ".": (192,96),
+        "&": (32,32)   # path
     }
+    
+    solidTypes = [".", "&", "%"]
     def __init__(self, image, size):
         self.image = image # This is the tilemap image
         self.w,self.h = size # The size of each tile
@@ -61,8 +65,8 @@ class TileSheet(object):
                 # Get the image that corresponds to this cell
                 tileImage = self.tilemap.get(cell)
                 if tileImage:
-                    isSolid = cell == "." # If the cell is a ".", then it should be solid
-                    tile = Tile(tileImage, isSolid, x*self.w, y*self.h)
+                    isSolid = cell in self.solidTypes # If the cell is a ".", then it should be solid
+                    tile = Tile(tileImage, isSolid, x*self.w, y*self.h, cell)
                     if isSolid:
                         solidTileGroup.add(tile)
                     tileGroup.add(tile) # Create a Tile object with the correct image

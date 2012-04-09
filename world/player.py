@@ -47,7 +47,7 @@ class Player(Sprite):
                 touching.add(sprite)
         return touching
 
-    def update(self, dT,level):
+    def update(self, dT, level, levelControl):
         dT = dT / 1000.0
         
         self.vY -= dT * 600
@@ -63,7 +63,24 @@ class Player(Sprite):
         
         for sprite in self.touches(level.solidTiles):
             rect = sprite.rect 
-
+            
+            if sprite.tileType == "%":
+                self.rect.x = self.startPos[0]
+                self.rect.y = self.startPos[1]
+                self.vY = 0
+                self.vX = 0
+                self.jumping = 0
+                levelControl.nextLevel()
+            
+            if sprite.tileType == "&":
+                self.rect.x = self.startPos[0]
+                self.rect.y = self.startPos[1]
+                self.vY = 0
+                self.vX = 0
+                self.jumping = 0
+                levelControl.prevLevel()
+                
+            
             # collide with walls
             if rect.top < self.rect.bottom-2:
                 if self.rect.left <= rect.right and prev_rect.left >= rect.right:
