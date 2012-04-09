@@ -50,42 +50,17 @@ class Player(Sprite):
     def update(self, dT,level):
         dT = dT / 1000.0
         
-
-       
         self.vY -= dT * 600
         dX = self.vX * dT
         dY = -self.vY * dT
+
+        self.bullets.update(dT, level)            
 
         # update position
         prev_rect = self.rect
         self.rect = self.rect.move(dX, dY)
         self.rect.clamp_ip(level.bounds)   # temp error
-
         
-<<<<<<< HEAD
-        self.bullets.update(dT, level)
-        
-        for tile in level.solidTiles:
-            if (tile.rect.collidepoint(self.rect.bottomleft) or tile.rect.collidepoint(self.rect.bottomright)) and not tile.rect.collidepoint(self.rect.topright) and not tile.rect.collidepoint(self.rect.topleft):
-                self.gravity = False
-                self.jumping = 0
-                self.rect.bottom = tile.rect.top
-            if tile.rect.collidepoint(self.rect.topleft) or tile.rect.collidepoint(self.rect.topright) and self.jumping > 0:
-                self.vY = 0
-                #self.rect.top = tile.rect.bottom
-                self.decay += 2
-            if tile.rect.collidepoint(self.rect.topleft):
-                self.vX = 0
-                self.rect.left += 2
-            if tile.rect.collidepoint(self.rect.topright):
-                self.vX = 0
-                self.rect.right -= 2
-                    
-                    
-    def shoot(self):
-        bullet = Bullet(self.rect.x, self.rect.y, self.direction, 0)
-        self.bullets.add(bullet)
-=======
         for sprite in self.touches(level.solidTiles):
             rect = sprite.rect 
 
@@ -105,5 +80,9 @@ class Player(Sprite):
                 self.vY = 0
                 self.rect.bottom = rect.top-1
                 self.jumping = 0
+
+                    
+    def shoot(self):
+        bullet = Bullet(self.rect.x, self.rect.y, self.direction, 0)
+        self.bullets.add(bullet)
                 
->>>>>>> a04938321450db2f7b1ddd1ec9b8496e5db05a94
