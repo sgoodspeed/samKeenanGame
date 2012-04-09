@@ -31,9 +31,9 @@ class TileSheet(object):
     # This defines what character in the .lvl file correspondes to which position in the tilemap image
      # PUT THIS IN A SETTINGS FILE
     _map = {
-        "~": (20,30),   # grass
-        "%": (20,150),  # flower
-        ".": (210,50)   # path
+        "~": (395,236),   # grass
+        "%": (385,289),  # flower
+        ".": (192,96)   # path
     }
     def __init__(self, image, size):
         self.image = image # This is the tilemap image

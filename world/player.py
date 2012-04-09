@@ -42,6 +42,7 @@ class Player(Sprite):
     def touches(self, group):
         touching = Group()
         coll = self.rect.inflate(1,1) # grow 1px to allow for edges
+        coll = self.rect
         for sprite in group:
             if coll.colliderect(sprite.rect):
                 touching.add(sprite)
@@ -69,6 +70,7 @@ class Player(Sprite):
                 self.rect.left = rect.right
             if self.rect.right >= rect.left and prev_rect.right <= rect.left:
                 self.rect.right = rect.left
+            if rect.top < self.rect.bottom-2:
 
             # handle cielings
             if self.rect.top <= rect.bottom and prev_rect.top >= rect.bottom:
@@ -80,6 +82,8 @@ class Player(Sprite):
                 self.vY = 0
                 self.rect.bottom = rect.top-1
                 self.jumping = 0
+                    self.rect.bottom = rect.top
+                    self.rect.bottom = rect.top
 
                     
     def shoot(self):
