@@ -25,18 +25,19 @@ class Tile(Sprite):
         self.rect = tileImage.get_rect()
         self.rect.topleft = (x,y)
         self.tileType = tileType
-        
+
 
 ## Tilesheet class
 class TileSheet(object):
     # This defines what character in the .lvl file correspondes to which position in the tilemap image
      # PUT THIS IN A SETTINGS FILE
     _map = {
-        "~": (395,236),   # grass
-        "%": (385,289),  # flower
+        "~": (395,236),
+        "%": (385,289),
         ".": (192,96),
-        "&": (32,32)   # path
-    }
+        "&": (32,32),
+        "o": (0,0)
+        }
     
     solidTypes = [".", "&", "%"]
     def __init__(self, image, size):
@@ -65,19 +66,17 @@ class TileSheet(object):
                 # Get the image that corresponds to this cell
                 tileImage = self.tilemap.get(cell)
                 if tileImage:
-                    isSolid = cell in self.solidTypes # If the cell is a ".", then it should be solid
+                    isSolid = cell in self.solidTypes # If the cell is in the solid list then it should be solid
+                    if cell == "o": # o = door
+                        doorLoc = x*self.w, y*self.h
                     tile = Tile(tileImage, isSolid, x*self.w, y*self.h, cell)
                     if isSolid:
                         solidTileGroup.add(tile)
                     tileGroup.add(tile) # Create a Tile object with the correct image
-        return tileGroup, solidTileGroup, size
+        return tileGroup, solidTileGroup, size, doorLoc
         
 # Level class
 # This holds the actual final rendered image of the level according to the .lvl file, rendered with tiles from the tilemap image
-
-
-##### DO LEVEL NAV DIFFERENTLY: LOAD MULTIPLE LEVEL CLASSES, RATHER THAN CONTINOUSLY RE-INITIALIZING ONE OF THEM
-##### THAT WAY WE CAN ALSO PRE-LOAD LEVELS
 class Level(object):
     def __init__(self, name, tilesheet):
         path = os.path.join("data", "levels", name) + ".lvl"
@@ -85,14 +84,22 @@ class Level(object):
         data = f.read().replace("\r", "").strip().split("\n")
         f.close()
         
-        self.tiles, self.solidTiles, size = tilesheet.render(data)
+        self.name = name
+        self.tiles, self.solidTiles, size, self.doorLoc = tilesheet.render(data)
         self.bounds = Rect((0,0), size)
         
-        self.render_background()
+        
+        #This door points to the next room and is in this one 
     
     def render_background(self):
         self.background = Surface(self.bounds.size)
         self.tiles.draw(self.background)
+        self.door.draw(self.background)
+        
+    def addDoor(self, door):
+        self.door = door
+        self.door.rect.topleft = self.doorLoc
+        self.render_background()
 
 
 

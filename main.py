@@ -10,6 +10,7 @@ from world.player import *
 from tiles import *
 from pygame.sprite import *
 from core.cameraJunk.camera import *
+from world.door import Door
 
 
 # controls/player.py
@@ -65,8 +66,10 @@ class SfxController(KeyListener):
 
 
 class Game(Application):
-    levelFiles = ["level1", "level2"]
+    levelFiles = ["0", "1", "2"]
+    levelLinks = [1, 2, 0]
     def __init__(self):
+
         Application.__init__(self)
         
         # Create player and put it in a spritegroup
@@ -89,9 +92,12 @@ class Game(Application):
         # Create an array of all the levels
         for levelFile in self.levelFiles:
             self.levels.append(Level(levelFile, self.tileSheet))
+            
+        for key,link in enumerate(self.levelLinks):
+            door = Door(self.levels[link], (150,504))
+            self.levels[key].addDoor(door)
     
         self.currLevel = self.levels[0]
-                
 
         #Camera init
         self.cam = Camera(self.player,self.currLevel.bounds,self.gameArea.get_size())
@@ -106,7 +112,11 @@ class Game(Application):
         
         self.cam.update(self.player.rect)
         
-        self.playerGroup.update(dT, self.currLevel)            
+        self.playerGroup.update(dT, self.currLevel)
+        
+        
+        if self.currLevel.door.rect.colliderect(self.player.rect):
+            self.changeLevel(self.currLevel.door.nextLevel)
     
     def draw(self, screen):
         # draw

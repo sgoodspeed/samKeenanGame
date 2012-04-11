@@ -39,6 +39,13 @@ class Player(Sprite):
         self.vY = 350
         self.jumping +=1
 
+    def changeLevel(self):
+        self.rect.x = self.startPos[0]
+        self.rect.y = self.startPos[1]
+        self.vY = 0
+        self.vX = 0
+        self.jumping = 0
+
     def touches(self, group):
         touching = Group()
         coll = self.rect
@@ -63,21 +70,6 @@ class Player(Sprite):
         
         for sprite in self.touches(level.solidTiles):
             rect = sprite.rect 
-            
-            if sprite.tileType == "%":
-                self.rect.x = self.startPos[0]
-                self.rect.y = self.startPos[1]
-                self.vY = 0
-                self.vX = 0
-                self.jumping = 0
-            
-            if sprite.tileType == "&":
-                self.rect.x = self.startPos[0]
-                self.rect.y = self.startPos[1]
-                self.vY = 0
-                self.vX = 0
-                self.jumping = 0
-                
             
             # collide with walls
             if rect.top < self.rect.bottom-2:
