@@ -65,6 +65,7 @@ class SfxController(KeyListener):
 
 
 class Game(Application):
+    levelFiles = ["level1", "level2"]
     def __init__(self):
         Application.__init__(self)
         
@@ -81,32 +82,36 @@ class Game(Application):
         self.input.add_key_listener(sc)
         
         # Load the tilemap image, build a tilesheet out of it and render the tilesheet into an image which we can blit to the screen
-        self.levelNum = 1;
+        self.levels = []
         self.img_tiles = load_image("tiles", (0,255,200))
-        self.tilesheet = TileSheet(self.img_tiles, (32, 32))
-        self.level = Level("level"+str(self.levelNum), self.tilesheet)
+        self.tileSheet = TileSheet(self.img_tiles, (32, 32)) 
         
-        
-        self.lc = LevelController(self.level, self.tilesheet, self.levelNum)
-        self.input.add_key_listener(self.lc)
-        
-        # Create the group of solids
-        
+        # Create an array of all the levels
+        for levelFile in self.levelFiles:
+            self.levels.append(Level(levelFile, self.tileSheet))
+    
+        self.currLevel = self.levels[0]
+                
 
         #Camera init
-        self.cam = Camera(self.player,self.level.bounds,self.gameArea.get_size())
+        self.cam = Camera(self.player,self.currLevel.bounds,self.gameArea.get_size())
+
+    def changeLevel(self, nextLevel):
+        self.currLevel = nextLevel
+        self.player.changeLevel()
 
     def update(self):
         # update
         dT = self.clock.get_time()
         
         self.cam.update(self.player.rect)
-        self.playerGroup.update(dT, self.level, self.lc)            
+        
+        self.playerGroup.update(dT, self.currLevel)            
     
     def draw(self, screen):
         # draw
 
-        self.cam.draw_background(self.gameArea, self.level.background)
+        self.cam.draw_background(self.gameArea, self.currLevel.background)
         self.cam.draw_sprite(self.gameArea, self.player)
         self.cam.draw_sprite_group(self.gameArea, self.player.bullets)
         pygame.display.flip() # Refresh the screen

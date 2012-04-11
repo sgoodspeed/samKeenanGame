@@ -74,6 +74,10 @@ class TileSheet(object):
         
 # Level class
 # This holds the actual final rendered image of the level according to the .lvl file, rendered with tiles from the tilemap image
+
+
+##### DO LEVEL NAV DIFFERENTLY: LOAD MULTIPLE LEVEL CLASSES, RATHER THAN CONTINOUSLY RE-INITIALIZING ONE OF THEM
+##### THAT WAY WE CAN ALSO PRE-LOAD LEVELS
 class Level(object):
     def __init__(self, name, tilesheet):
         path = os.path.join("data", "levels", name) + ".lvl"

@@ -47,7 +47,7 @@ class Player(Sprite):
                 touching.add(sprite)
         return touching
 
-    def update(self, dT, level, levelControl):
+    def update(self, dT, level):
         dT = dT / 1000.0
         
         self.vY -= dT * 600
@@ -70,7 +70,6 @@ class Player(Sprite):
                 self.vY = 0
                 self.vX = 0
                 self.jumping = 0
-                levelControl.nextLevel()
             
             if sprite.tileType == "&":
                 self.rect.x = self.startPos[0]
@@ -78,7 +77,6 @@ class Player(Sprite):
                 self.vY = 0
                 self.vX = 0
                 self.jumping = 0
-                levelControl.prevLevel()
                 
             
             # collide with walls
@@ -97,7 +95,7 @@ class Player(Sprite):
 
             # handle landing
             if self.rect.bottom >= rect.top and prev_rect.bottom <= rect.top:
-                if self.jumping == 0:
+                if self.jumping == 0 and not ((self.rect.left <= rect.right and prev_rect.left >= rect.right) or (self.rect.right >= rect.left and prev_rect.right <= rect.left)):
                     self.vY = 0
                     self.rect.bottom = rect.top
                     self.jumping = 0
