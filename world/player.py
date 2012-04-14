@@ -3,13 +3,9 @@ from pygame.locals import *
 from pygame.sprite import *
 from pygame import Surface,Rect,draw
 from projectiles import Bullet
+from core.settings import *
 
 class Player(Sprite):
-    width = 20
-    height = 20
-    size = width,height
-    startPos = 100,504
-    speed = 200
     vX = 0
     vY = 0
     jumping = 0
@@ -19,7 +15,7 @@ class Player(Sprite):
     def __init__(self):
         Sprite.__init__(self)
 
-        self.rect = Rect(self.startPos,self.size) # Build the player's rect
+        self.rect = Rect(PLAYER_START, PLAYER_SIZE) # Build the player's rect
         self.image = Surface(self.rect.size) # Give the player a surface the size of the rect
         self.image.fill((0,0,0)) # Fill the surface with black
         
@@ -31,20 +27,21 @@ class Player(Sprite):
         self.bullets = Group()
         
     def move(self, direction):
-        self.vX = direction * self.speed # This doesn't actually MOVE anything, it just sets velocity
+        self.vX = direction * PLAYER_SPEED # This doesn't actually MOVE anything, it just sets velocity
         self.direction = direction
         
     def jump(self):
         # Like move(), this doesn't actually do the jumping, it just sets up the variables and tells the player that it is now jumping. Update does the heavy lifting.
-        self.vY = 350
+        self.vY = PLAYER_JUMP_SPEED
         self.jumping +=1
 
     def changeLevel(self):
-        self.rect.x = self.startPos[0]
-        self.rect.y = self.startPos[1]
+        self.rect.x = PLAYER_START_X
+        self.rect.y = PLAYER_START_Y
         self.vY = 0
         self.vX = 0
         self.jumping = 0
+        self.bullets.empty()
 
     def touches(self, group):
         touching = Group()
@@ -57,7 +54,7 @@ class Player(Sprite):
     def update(self, dT, level):
         dT = dT / 1000.0
         
-        self.vY -= dT * 600
+        self.vY -= dT * GRAVITY_SPEED
         dX = self.vX * dT
         dY = -self.vY * dT
 

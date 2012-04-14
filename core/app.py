@@ -4,6 +4,7 @@ import pygame
 from pygame.locals import *
 from ui import InfoText
 from core.input import InputManager, KeyListener, MouseListener
+from core.settings import *
 
 # core/sound.py
 class SoundManager(object):
@@ -11,12 +12,9 @@ class SoundManager(object):
         pass
 
 class Application(object):
-    title = None
-    screen_size = 800, 600
-    hudRect = ((0,0,screen_size[0],40))
-    gameRect = ((0,40,screen_size[0],screen_size[1]-40))
-    screen_flags = DOUBLEBUF|HWSURFACE|SRCALPHA
-    fps = 30
+    hudRect = ((0,0,SCR_W,HUD_HEIGHT))
+    gameRect = ((0,40,SCR_W,SCR_H-HUD_HEIGHT))
+    SCREEN_FLAGS = DOUBLEBUF|HWSURFACE|SRCALPHA
     pause_key = K_p
     paused_text = "Press Space to Resume"
     restart_key = K_r
@@ -27,7 +25,7 @@ class Application(object):
     def __init__(self):
         pygame.init()
         #Scree init
-        self.screen = pygame.display.set_mode(self.screen_size, self.screen_flags)
+        self.screen = pygame.display.set_mode(SCREEN_SIZE, self.SCREEN_FLAGS)
         #Subsurfaces
         self.hud = self.screen.subsurface(self.hudRect)
         self.gameArea = self.screen.subsurface(self.gameRect)
@@ -37,8 +35,7 @@ class Application(object):
         #Clock
         self.clock = pygame.time.Clock()
         
-        if self.title:
-            pygame.display.set_caption(self.title)
+        pygame.display.set_caption(TITLE)
         
         font = pygame.font.Font(None, 40)
         self._paused_text = font.render(self.paused_text, True, (255,255,255), (0,0,0))
@@ -88,7 +85,7 @@ class Application(object):
         self.done = True
 
     def step(self):
-        self.clock.tick(self.fps)
+        self.clock.tick(FPS)
 
         # Pause if screen is hidden
         if not pygame.display.get_active() and not self.paused:

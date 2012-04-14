@@ -5,6 +5,8 @@ import pygame
 from pygame.locals import *
 from pygame.sprite import *
 from pygame import Surface,Rect,draw
+from core.settings import *
+
 
 # This just loads the tilemap image from data/images/[name].bmp
 def load_image(name, colorkey=None):
@@ -29,24 +31,13 @@ class Tile(Sprite):
 
 ## Tilesheet class
 class TileSheet(object):
-    # This defines what character in the .lvl file correspondes to which position in the tilemap image
-     # PUT THIS IN A SETTINGS FILE
-    _map = {
-        "~": (395,236),
-        "%": (385,289),
-        ".": (192,96),
-        "&": (32,32),
-        "o": (0,0)
-        }
-    
-    solidTypes = [".", "&", "%"]
     def __init__(self, image, size):
         self.image = image # This is the tilemap image
         self.w,self.h = size # The size of each tile
         
         # Build a dictionary that pairs characters with tiles in the tilemap
         self.tilemap = {}
-        for tile,coord in self._map.items():
+        for tile,coord in TILE_MAP_COORDS.items():
             if coord:
                 x,y = coord
                 self.tilemap[tile] = image.subsurface(x, y, self.w, self.h)
@@ -66,7 +57,7 @@ class TileSheet(object):
                 # Get the image that corresponds to this cell
                 tileImage = self.tilemap.get(cell)
                 if tileImage:
-                    isSolid = cell in self.solidTypes # If the cell is in the solid list then it should be solid
+                    isSolid = cell in TILE_SOLIDS # If the cell is in the solid list then it should be solid
                     if cell == "o": # o = door
                         doorLoc = x*self.w, y*self.h
                     tile = Tile(tileImage, isSolid, x*self.w, y*self.h, cell)

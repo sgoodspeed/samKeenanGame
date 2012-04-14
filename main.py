@@ -4,6 +4,7 @@ import os
 import pygame
 from pygame.locals import *
 
+from core.settings import *
 from core.input import InputManager, KeyListener, MouseListener
 from core.app import Application
 from world.player import *
@@ -20,7 +21,7 @@ class PlayerController(KeyListener, MouseListener):
         self.player = player
 
     def on_keydown(self, event):
-        if event.key == K_SPACE and self.player.jumping < 2:
+        if event.key == K_SPACE and self.player.jumping < PLAYER_MAX_JUMPS:
             self.player.jump() #Note to future selves: You guys look handsome and you should figure out key repeat exemptions for jumping so that holding space doesn't double jump
         if event.key == K_LEFT:
             self.player.move(-1)
@@ -33,26 +34,6 @@ class PlayerController(KeyListener, MouseListener):
         if event.key == K_LEFT or event.key == K_RIGHT:
             self.player.vX = 0
 
-# This is just testing stuff
-class LevelController(KeyListener):
-    def __init__(self, level, tilesheet, levelNum):
-        self.level = level
-        self.tilesheet = tilesheet
-        self.levelNum = levelNum
-        
-    def on_keydown(self, event):
-        if event.key == K_e:
-            self.nextLevel()
-        if event.key == K_w:
-            self.prevLevel()
-            
-    def nextLevel(self):
-        self.levelNum += 1
-        self.level.__init__("level"+str(self.levelNum), self.tilesheet)
-    
-    def prevLevel(self):
-        self.levelNum -= 1
-        self.level.__init__("level"+str(self.levelNum), self.tilesheet)
 
 # controls/sound.py
 class SfxController(KeyListener):
@@ -66,8 +47,6 @@ class SfxController(KeyListener):
 
 
 class Game(Application):
-    levelFiles = ["0", "1", "2"]
-    levelLinks = [1, 2, 0]
     def __init__(self):
 
         Application.__init__(self)
@@ -86,14 +65,14 @@ class Game(Application):
         
         # Load the tilemap image, build a tilesheet out of it and render the tilesheet into an image which we can blit to the screen
         self.levels = []
-        self.img_tiles = load_image("tiles", (0,255,200))
-        self.tileSheet = TileSheet(self.img_tiles, (32, 32)) 
+        self.img_tiles = load_image(TILEMAP_IMAGE, (0,255,200))
+        self.tileSheet = TileSheet(self.img_tiles, (TILE_SIZE)) 
         
         # Create an array of all the levels
-        for levelFile in self.levelFiles:
+        for levelFile in LEVELS:
             self.levels.append(Level(levelFile, self.tileSheet))
             
-        for key,link in enumerate(self.levelLinks):
+        for key,link in enumerate(LEVEL_LINKS):
             door = Door(self.levels[link], (150,504))
             self.levels[key].addDoor(door)
     
