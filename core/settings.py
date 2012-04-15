@@ -1,6 +1,6 @@
 ### APP
 SCREEN_SIZE = SCR_W, SCR_H = 800, 600
-TITLE = "Ghosts 'n' Gears"
+TITLE = "Ghosts 'n' Gears" #Haha I still think this title is hilarious
 FPS = 30
 HUD_HEIGHT = 40
 

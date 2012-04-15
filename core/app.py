@@ -28,6 +28,7 @@ class Application(object):
         self.screen = pygame.display.set_mode(SCREEN_SIZE, self.SCREEN_FLAGS)
         #Subsurfaces
         self.hud = self.screen.subsurface(self.hudRect)
+        
         self.gameArea = self.screen.subsurface(self.gameRect)
 
         
