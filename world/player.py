@@ -25,6 +25,8 @@ class Player(Sprite):
         self.direction = 1
         
         self.bullets = Group()
+
+        self.health = 100
         
     def move(self, direction):
         self.vX = direction * PLAYER_SPEED # This doesn't actually MOVE anything, it just sets velocity
