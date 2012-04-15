@@ -69,7 +69,7 @@ class Player(Sprite):
             rect = sprite.rect 
             
             # collide with walls
-            if rect.top < self.rect.bottom-2:
+            if (self.jumping == 0 and rect.top < self.rect.bottom-2) or (self.jumping > 0 and rect.top < self.rect.bottom):
                 if self.rect.left <= rect.right and prev_rect.left >= rect.right:
                     self.rect.left = rect.right
                 if self.rect.right >= rect.left and prev_rect.right <= rect.left:
