@@ -7,7 +7,9 @@ from pygame.locals import *
 from core.settings import *
 from core.input import InputManager, KeyListener, MouseListener
 from core.app import Application
+from core.hud import *
 from world.player import *
+from world.sampleEnemy import *
 from tiles import *
 from pygame.sprite import *
 from core.cameraJunk.camera import *
@@ -22,7 +24,7 @@ class PlayerController(KeyListener, MouseListener):
 
     def on_keydown(self, event):
         if event.key == K_SPACE and self.player.jumping < PLAYER_MAX_JUMPS:
-            self.player.jump() #Note to future selves: You guys look handsome and you should figure out key repeat exemptions for jumping so that holding space doesn't double jump
+            self.player.jump() 
         if event.key == K_LEFT:
             self.player.move(-1)
         if event.key == K_RIGHT:
@@ -54,10 +56,21 @@ class Game(Application):
         # Create player and put it in a spritegroup
         self.player = Player()
         self.playerGroup = pygame.sprite.GroupSingle(self.player)
-        
+
         # Create the PlayerController and pass it player and add a keyboard listener to it
         pc = PlayerController(self.player)
         self.input.add_key_listener(pc)
+
+        #Create Hud instance
+        self.gameHud = Hud(self.player.health,self.hud)
+
+        #Creating sample eemies, group
+        self.sample1 = sampleEnemy((1,168),(255,252,99))
+        self.sample2 = sampleEnemy((103,232),(27,53,224))
+        self.sample3 = sampleEnemy((68,456),(255,98,0))
+        self.sample4 = sampleEnemy((248,40),(43,255,10))
+        self.sampleEnemyGroup = pygame.sprite.Group(self.sample1,self.sample2,self.sample3,self.sample4)          
+        
                 
         # Create the sound effects controller and give it a keyboard listener as well
         sc = SfxController(self.sounds, self)
@@ -77,6 +90,7 @@ class Game(Application):
             self.levels[key].addDoor(door)
     
         self.currLevel = self.levels[0]
+        self.count = 0
 
         #Camera init
         self.cam = Camera(self.player,self.currLevel.bounds,self.gameArea.get_size())
@@ -93,9 +107,12 @@ class Game(Application):
         
         self.playerGroup.update(dT, self.currLevel)
         
-        
         if self.currLevel.door.rect.colliderect(self.player.rect):
             self.changeLevel(self.currLevel.door.nextLevel)
+        #player collision with sample enemy
+        for self.player in pygame.sprite.groupcollide(self.playerGroup,self.sampleEnemyGroup,False,True):
+            self.player.health-=15
+            print self.player.health
     
     def draw(self, screen):
         # draw
@@ -103,7 +120,11 @@ class Game(Application):
         self.cam.draw_background(self.gameArea, self.currLevel.background)
         self.cam.draw_sprite(self.gameArea, self.player)
         self.cam.draw_sprite_group(self.gameArea, self.player.bullets)
+        self.cam.draw_sprite_group(self.gameArea, self.sampleEnemyGroup)
         pygame.display.flip() # Refresh the screen
+        
+        self.gameHud.hudDraw(self.player.health)
+        print self.gameHud.healthBar
 
 
 if __name__ == "__main__":

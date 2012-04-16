@@ -27,6 +27,6 @@ class Hud (object):
             self.healthColor = (0,255,0)
         else:
             self.healthColor = (255,0,0)
-        
-        pygame.draw.rect(self.surf,self.healthColor,self.healthBar)
-    
+        if self.health>0:
+            pygame.draw.rect(self.surf,(0,0,0),self.healthBar)
+            pygame.draw.rect(self.surf,self.healthColor,self.healthBar)
