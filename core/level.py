@@ -18,6 +18,18 @@ def load_image(name, colorkey=None):
     return image
 
 
+def createEnemies(data):
+    enemies = Group()
+    atEnd = False
+    
+    for y, row in enumerate(data):
+        if row == "EOL":
+            atEnd = True
+        if atEnd and row != "EOL":
+            lineData = row.split(" ")
+            print lineData
+            
+
 ## Tile class
 class Tile(Sprite):
     def __init__(self, tileImage, isSolid, x, y, tileType):
@@ -53,6 +65,8 @@ class TileSheet(object):
         
         # Loop through the .lvl file
         for y, row in enumerate(data):
+            if row == "EOL":
+               break
             for x, cell in enumerate(row):
                 # Get the image that corresponds to this cell
                 tileImage = self.tilemap.get(cell)
@@ -74,14 +88,13 @@ class Level(object):
         f = open(path, "r")
         data = f.read().replace("\r", "").strip().split("\n")
         f.close()
-        
+                
         self.name = name
         self.tiles, self.solidTiles, size, self.doorLoc = tilesheet.render(data)
         self.bounds = Rect((0,0), size)
         
+        createEnemies(data)
         
-        #This door points to the next room and is in this one 
-    
     def render_background(self):
         self.background = Surface(self.bounds.size)
         self.tiles.draw(self.background)

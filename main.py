@@ -9,8 +9,8 @@ from core.input import InputManager, KeyListener, MouseListener
 from core.app import Application
 from core.hud import *
 from world.player import *
-from world.sampleEnemy import *
-from tiles import *
+from world.enemies import *
+from core.level import *
 from pygame.sprite import *
 from core.cameraJunk.camera import *
 from world.door import Door
@@ -69,7 +69,9 @@ class Game(Application):
         self.sample2 = sampleEnemy((103,232),(27,53,224))
         self.sample3 = sampleEnemy((68,456),(255,98,0))
         self.sample4 = sampleEnemy((248,40),(43,255,10))
-        self.sampleEnemyGroup = pygame.sprite.Group(self.sample1,self.sample2,self.sample3,self.sample4)          
+        self.sampleEnemyGroup = pygame.sprite.Group(self.sample1,self.sample2,self.sample3,self.sample4)
+        
+                
         
                 
         # Create the sound effects controller and give it a keyboard listener as well

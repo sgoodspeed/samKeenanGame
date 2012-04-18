@@ -1,3 +1,5 @@
+import os
+
 import pygame
 from pygame.locals import *
 from pygame.sprite import *
@@ -13,9 +15,7 @@ from main import *
 #248,40
 #620, 552
 
-
 class sampleEnemy(Sprite):
-    
     
     def __init__(self, startPos, color):
         Sprite.__init__(self)
