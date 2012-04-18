@@ -6,6 +6,7 @@ from pygame.locals import *
 from pygame.sprite import *
 from pygame import Surface,Rect,draw
 from core.settings import *
+from enemies import sampleEnemy
 
 
 # This just loads the tilemap image from data/images/[name].bmp
@@ -19,7 +20,7 @@ def load_image(name, colorkey=None):
 
 
 def createEnemies(data):
-    enemies = Group()
+    enemiesGroup = Group()
     atEnd = False
     
     for y, row in enumerate(data):
@@ -27,7 +28,13 @@ def createEnemies(data):
             atEnd = True
         if atEnd and row != "EOL":
             lineData = row.split(" ")
-            print lineData
+            enemyType = str(lineData[0])
+            x = int(lineData[1])
+            y = int(lineData[2])
+            enemyClass = eval(enemyType + "((x,y), (0,0,0))")
+            enemiesGroup.add(enemyClass)
+    
+    return enemiesGroup
             
 
 ## Tile class
@@ -93,7 +100,7 @@ class Level(object):
         self.tiles, self.solidTiles, size, self.doorLoc = tilesheet.render(data)
         self.bounds = Rect((0,0), size)
         
-        createEnemies(data)
+        self.enemies = createEnemies(data)
         
     def render_background(self):
         self.background = Surface(self.bounds.size)

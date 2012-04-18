@@ -64,12 +64,6 @@ class Game(Application):
         #Create Hud instance
         self.gameHud = Hud(self.player.health,self.hud)
 
-        #Creating sample eemies, group
-        self.sample1 = sampleEnemy((1,168),(255,252,99))
-        self.sample2 = sampleEnemy((103,232),(27,53,224))
-        self.sample3 = sampleEnemy((68,456),(255,98,0))
-        self.sample4 = sampleEnemy((248,40),(43,255,10))
-        self.sampleEnemyGroup = pygame.sprite.Group(self.sample1,self.sample2,self.sample3,self.sample4)
         
                 
         
@@ -112,8 +106,8 @@ class Game(Application):
         if self.currLevel.door.rect.colliderect(self.player.rect):
             self.changeLevel(self.currLevel.door.nextLevel)
         #player collision with sample enemy
-        for self.player in pygame.sprite.groupcollide(self.playerGroup,self.sampleEnemyGroup,False,True):
-            self.player.health-=15
+        #for self.player in pygame.sprite.groupcollide(self.playerGroup,self.sampleEnemyGroup,False,True):
+         #   self.player.health-=15
     
     def draw(self, screen):
         # draw
@@ -121,7 +115,7 @@ class Game(Application):
         self.cam.draw_background(self.gameArea, self.currLevel.background)
         self.cam.draw_sprite(self.gameArea, self.player)
         self.cam.draw_sprite_group(self.gameArea, self.player.bullets)
-        self.cam.draw_sprite_group(self.gameArea, self.sampleEnemyGroup)
+        self.cam.draw_sprite_group(self.gameArea, self.currLevel.enemies)
         pygame.display.flip() # Refresh the screen
         
         self.gameHud.hudDraw(self.player.health)
