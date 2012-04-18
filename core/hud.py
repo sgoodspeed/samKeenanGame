@@ -17,10 +17,9 @@ class Hud (object):
         
         
     def hudDraw(self,curHealth):
-        if self.health == curHealth:
-            pass
-        else:
-            self.health == curHealth
+        if self.health != curHealth:
+            self.health = curHealth
+            self.surf.fill((0,0,0))
             self.healthBar = Rect(10,10,self.health*2,20)
         
         if self.health>20:

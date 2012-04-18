@@ -112,7 +112,6 @@ class Game(Application):
         #player collision with sample enemy
         for self.player in pygame.sprite.groupcollide(self.playerGroup,self.sampleEnemyGroup,False,True):
             self.player.health-=15
-            print self.player.health
     
     def draw(self, screen):
         # draw
@@ -124,7 +123,6 @@ class Game(Application):
         pygame.display.flip() # Refresh the screen
         
         self.gameHud.hudDraw(self.player.health)
-        print self.gameHud.healthBar
 
 
 if __name__ == "__main__":
