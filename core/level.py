@@ -6,8 +6,7 @@ from pygame.locals import *
 from pygame.sprite import *
 from pygame import Surface,Rect,draw
 from core.settings import *
-from enemies import sampleEnemy
-
+from enemies import *
 
 # This just loads the tilemap image from data/images/[name].bmp
 def load_image(name, colorkey=None):
@@ -31,7 +30,7 @@ def createEnemies(data):
             enemyType = str(lineData[0])
             x = int(lineData[1])
             y = int(lineData[2])
-            enemyClass = eval(enemyType + "((x,y), (0,0,0))")
+            enemyClass = eval(enemyType + "((x,y))")
             enemiesGroup.add(enemyClass)
     
     return enemiesGroup

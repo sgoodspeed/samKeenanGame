@@ -100,4 +100,8 @@ class Player(Sprite):
     def shoot(self):
         bullet = Bullet(self.rect.x, self.rect.y, self.direction, 0)
         self.bullets.add(bullet)
-                
+    
+    def takeDamage(self,damageAmount):
+        self.health-=damageAmount
+        if self.health <=0:
+            print "slefslefslefslefslefslef"     

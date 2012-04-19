@@ -8,6 +8,7 @@ from core.settings import *
 # Generic Projectile Class
 class Bullet(Sprite):
     color = 255,0,0
+    damage = BULLET_DAMAGE
     def __init__(self, x, y, dirX, dirY):
         Sprite.__init__(self)
         self.rect = Rect((x, y), BULLET_SIZE)

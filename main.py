@@ -14,6 +14,7 @@ from core.level import *
 from pygame.sprite import *
 from core.cameraJunk.camera import *
 from world.door import Door
+from core.collisions import collisionCheck
 
 
 # controls/player.py
@@ -99,12 +100,16 @@ class Game(Application):
         # update
         dT = self.clock.get_time()
         
+        collisionCheck(self.playerGroup,self.currLevel.enemies)
+        
         self.cam.update(self.player.rect)
         
         self.playerGroup.update(dT, self.currLevel)
+        self.currLevel.enemies.update(dT, self.currLevel) # We shouldn't need to pass self.currLevel to a group that's owned by currLevel
         
         if self.currLevel.door.rect.colliderect(self.player.rect):
             self.changeLevel(self.currLevel.door.nextLevel)
+        
         #player collision with sample enemy
         #for self.player in pygame.sprite.groupcollide(self.playerGroup,self.sampleEnemyGroup,False,True):
          #   self.player.health-=15
