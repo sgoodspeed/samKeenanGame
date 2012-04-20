@@ -59,3 +59,4 @@ class AmmoPickup(Pickup):
         self.rect = Rect((x,y), AMMO_SIZE)
         self.image = Surface(self.rect.size)
         draw.rect(self.image, (255,0,0), self.image.get_rect())
+        self.vY = vY
