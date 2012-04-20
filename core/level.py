@@ -100,6 +100,8 @@ class Level(object):
         self.bounds = Rect((0,0), size)
         
         self.enemies = createEnemies(data)
+
+        self.ammo = Group()
         
     def render_background(self):
         self.background = Surface(self.bounds.size)

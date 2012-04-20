@@ -12,9 +12,10 @@ class Player(Sprite):
     decay = 0
     gravity = True
     
+    
     def __init__(self):
         Sprite.__init__(self)
-
+        self.thrown = False
         self.rect = Rect(PLAYER_START, PLAYER_SIZE) # Build the player's rect
         self.image = Surface(self.rect.size) # Give the player a surface the size of the rect
         self.image.fill((0,0,0)) # Fill the surface with black
@@ -25,7 +26,7 @@ class Player(Sprite):
         self.direction = 1
         
         self.bullets = Group()
-
+        self.ammo = 9001
         self.health = 100
         
     def move(self, direction):
@@ -60,7 +61,7 @@ class Player(Sprite):
         dX = self.vX * dT
         dY = -self.vY * dT
 
-        self.bullets.update(dT, level)            
+        self.bullets.update(dT, level)
 
         # update position
         prev_rect = self.rect
@@ -86,6 +87,9 @@ class Player(Sprite):
 
             # handle landing
             if self.rect.bottom >= rect.top and prev_rect.bottom <= rect.top:
+                if self.thrown:
+                    self.vX=0
+                    self.thrown = False
                 if self.jumping == 0 and not ((self.rect.left <= rect.right and prev_rect.left >= rect.right) or (self.rect.right >= rect.left and prev_rect.right <= rect.left)):
                     self.vY = 0
                     self.rect.bottom = rect.top
@@ -98,8 +102,11 @@ class Player(Sprite):
 
                     
     def shoot(self):
-        bullet = Bullet(self.rect.x, self.rect.y, self.direction, 0)
-        self.bullets.add(bullet)
+        if self.ammo > 0:
+            bullet = Bullet(self.rect.x, self.rect.y, self.direction, 0)
+            self.bullets.add(bullet)
+            self.ammo -= 1
+            print self.ammo
     
     def takeDamage(self,damageAmount):
         self.health-=damageAmount

@@ -24,14 +24,15 @@ class PlayerController(KeyListener, MouseListener):
         self.player = player
 
     def on_keydown(self, event):
-        if event.key == K_SPACE and self.player.jumping < PLAYER_MAX_JUMPS:
-            self.player.jump() 
-        if event.key == K_LEFT:
-            self.player.move(-1)
-        if event.key == K_RIGHT:
-            self.player.move(1)
-        if event.key == K_z:
-            self.player.shoot()
+        if not self.player.thrown:
+            if event.key == K_SPACE and self.player.jumping < PLAYER_MAX_JUMPS:
+               self.player.jump() 
+            if event.key == K_LEFT:
+                self.player.move(-1)
+            if event.key == K_RIGHT:
+                self.player.move(1)
+            if event.key == K_z:
+                self.player.shoot()
 
     def on_keyup(self,event):
         if event.key == K_LEFT or event.key == K_RIGHT:
@@ -100,7 +101,7 @@ class Game(Application):
         # update
         dT = self.clock.get_time()
         
-        collisionCheck(self.playerGroup,self.currLevel.enemies)
+        collisionCheck(self.playerGroup,self.currLevel.enemies, self.currLevel.ammo, self.currLevel)
         
         self.cam.update(self.player.rect)
         
@@ -121,6 +122,7 @@ class Game(Application):
         self.cam.draw_sprite(self.gameArea, self.player)
         self.cam.draw_sprite_group(self.gameArea, self.player.bullets)
         self.cam.draw_sprite_group(self.gameArea, self.currLevel.enemies)
+        self.cam.draw_sprite_group(self.gameArea, self.currLevel.ammo)
         pygame.display.flip() # Refresh the screen
         
         self.gameHud.hudDraw(self.player.health)
