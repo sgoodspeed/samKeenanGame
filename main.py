@@ -16,6 +16,8 @@ from core.cameraJunk.camera import *
 from world.door import Door
 from core.collisions import collisionCheck
 
+#Continuing on with melee attacks: the draw isn't working, it's because the function for melee attack runs once each time you press it, rather than continuously ten times through when the key is pressed once. Ideas: While loop, sepratare method, etc.
+
 
 # controls/player.py
 # This is a combination mouse and key listener which we then pass to input manager
@@ -33,6 +35,8 @@ class PlayerController(KeyListener, MouseListener):
                 self.player.move(1)
             if event.key == K_z:
                 self.player.shoot()
+            if event.key == K_x:
+                self.player.meleeAttack()
 
     def on_keyup(self,event):
         if event.key == K_LEFT or event.key == K_RIGHT:

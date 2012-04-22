@@ -22,3 +22,5 @@ def collisionCheck(player,enemyGroup, ammoGroup, level):
 
     for ammo in groupcollide(ammoGroup, player, True, False):
         player.sprite.ammo += AMMO_AMOUNT
+
+    #print player.sprite.melee

@@ -11,16 +11,20 @@ class Player(Sprite):
     jumping = 0
     decay = 0
     gravity = True
+    melee = False
+    timer = 0
     
     
     def __init__(self):
         Sprite.__init__(self)
         self.thrown = False
+
         self.rect = Rect(PLAYER_START, PLAYER_SIZE) # Build the player's rect
+
         self.image = Surface(self.rect.size) # Give the player a surface the size of the rect
         self.image.fill((0,0,0)) # Fill the surface with black
-        
         self.image.set_colorkey((0,0,0)) # Probably don't want this later
+
         draw.rect(self.image, (0,0,255), self.image.get_rect()) # This draws the visible blue rectangle (We only draw this image once. Then, the spritegroup that Player is a part of moves the player's Surface (which has the image we just drew) around)
         
         self.direction = 1
@@ -28,7 +32,12 @@ class Player(Sprite):
         self.bullets = Group()
         self.ammo = 9001
         self.health = 100
-        
+
+        self.melRect = Rect(self.rect.x + 27, self.rect.y + 10, 32,12)
+        self.melImage = Surface(self.melRect.size)
+        self.melImage.fill((0,255,0))
+        self.melImage.set_colorkey((0,255,0))
+
     def move(self, direction):
         self.vX = direction * PLAYER_SPEED # This doesn't actually MOVE anything, it just sets velocity
         self.direction = direction
@@ -66,7 +75,8 @@ class Player(Sprite):
         # update position
         prev_rect = self.rect
         self.rect = self.rect.move(dX, dY)
-        self.rect.clamp_ip(level.bounds)   # temp error
+        self.melRect.move(dX,dY)
+        self.rect.clamp_ip(level.bounds)  
         
         for sprite in self.touches(level.solidTiles):
             rect = sprite.rect 
@@ -107,8 +117,29 @@ class Player(Sprite):
             self.bullets.add(bullet)
             self.ammo -= 1
             print self.ammo
+            
+    def meleeAttack(self):
+        
+        self.melee = True
+        if self.melee:
+            print "Here"
+            draw.rect(self.melImage, (0,0,255), self.melImage.get_rect())
+            
+            self.timer+=1
+            print self.timer
+            if self.timer > 10:
+                self.timer = 0
+                self.melee = False
+                
+            
+##            
+##                self.melImage.fill(0,255,0)
+##                self.melee = False
+            
+            
+            
     
     def takeDamage(self,damageAmount):
         self.health-=damageAmount
         if self.health <=0:
-            print "slefslefslefslefslefslef"     
+            print "Felsfelsfelsfelsfelsfelsfelsfelsfels"     
