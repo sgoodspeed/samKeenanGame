@@ -22,23 +22,38 @@ from core.collisions import collisionCheck
 # controls/player.py
 # This is a combination mouse and key listener which we then pass to input manager
 class PlayerController(KeyListener, MouseListener):
+    k_moveLeft = K_LEFT
+    k_moveRight = K_RIGHT
     def __init__(self, player):
         self.player = player
+        self.pressed = {}
+        
 
     def on_keydown(self, event):
+        self.pressed[event.key] = True
         if not self.player.thrown:
             if event.key == K_SPACE and self.player.jumping < PLAYER_MAX_JUMPS:
                self.player.jump() 
-            if event.key == K_LEFT:
-                self.player.move(-1)
-            if event.key == K_RIGHT:
-                self.player.move(1)
-            if event.key == K_z:
+        
+            elif event.key == K_z:
                 self.player.shoot()
-            if event.key == K_x:
+            elif event.key == K_x:
                 self.player.meleeAttack()
-
+            
+            
+    def update(self):
+        if self.pressed.get(self.k_moveLeft) and self.pressed.get(self.k_moveRight):
+            self.player.move(0)
+        elif self.pressed.get(self.k_moveLeft):
+            self.player.move(-1)
+        elif self.pressed.get(self.k_moveRight):
+            self.player.move(1)
+        else:
+            self.player.move(0)
+        
+            
     def on_keyup(self,event):
+        self.pressed[event.key] = False
         if event.key == K_LEFT or event.key == K_RIGHT:
             self.player.vX = 0
 
@@ -64,8 +79,8 @@ class Game(Application):
         self.playerGroup = pygame.sprite.GroupSingle(self.player)
 
         # Create the PlayerController and pass it player and add a keyboard listener to it
-        pc = PlayerController(self.player)
-        self.input.add_key_listener(pc)
+        self.pc = PlayerController(self.player)
+        self.input.add_key_listener(self.pc)
 
         #Create Hud instance
         self.gameHud = Hud(self.player.health,self.hud)
@@ -103,9 +118,9 @@ class Game(Application):
 
     def update(self):
         # update
-        dT = self.clock.get_time()
-        
-        collisionCheck(self.playerGroup,self.currLevel.enemies, self.currLevel.ammo, self.currLevel)
+        dT = min(200, self.clock.get_time())
+        self.pc.update()
+        collisionCheck(self.playerGroup, self.currLevel.enemies, self.currLevel.ammo, self.currLevel)
         
         self.cam.update(self.player.rect)
         
@@ -123,10 +138,11 @@ class Game(Application):
     
     def draw(self, screen):
         # draw
-
+        
         self.cam.draw_background(self.gameArea, self.currLevel.background)
         self.cam.draw_sprite(self.gameArea, self.player)
         self.cam.draw_sprite_group(self.gameArea, self.player.bullets)
+        self.cam.draw_sprite_group(self.gameArea,self.player.meleeGroup)
         self.cam.draw_sprite_group(self.gameArea, self.currLevel.enemies)
         self.cam.draw_sprite_group(self.gameArea, self.currLevel.ammo)
         pygame.display.flip() # Refresh the screen

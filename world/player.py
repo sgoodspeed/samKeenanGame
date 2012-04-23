@@ -2,8 +2,9 @@ import pygame
 from pygame.locals import *
 from pygame.sprite import *
 from pygame import Surface,Rect,draw
-from projectiles import Bullet
+from projectiles import *
 from core.settings import *
+from core.level import *
 
 class Player(Sprite):
     vX = 0
@@ -20,6 +21,7 @@ class Player(Sprite):
         self.thrown = False
 
         self.rect = Rect(PLAYER_START, PLAYER_SIZE) # Build the player's rect
+        self.cleanRect = Rect(self.rect.bottomleft, (10,10))
 
         self.image = Surface(self.rect.size) # Give the player a surface the size of the rect
         self.image.fill((0,0,0)) # Fill the surface with black
@@ -30,16 +32,17 @@ class Player(Sprite):
         self.direction = 1
         
         self.bullets = Group()
+        self.meleeGroup = GroupSingle()
         self.ammo = 9001
         self.health = 100
-
-        self.melRect = Rect(self.rect.x + 27, self.rect.y + 10, 32,12)
-        self.melImage = Surface(self.melRect.size)
-        self.melImage.fill((0,255,0))
-        self.melImage.set_colorkey((0,255,0))
+        self.facing = 1
+        
 
     def move(self, direction):
         self.vX = direction * PLAYER_SPEED # This doesn't actually MOVE anything, it just sets velocity
+        if direction !=0:
+            self.facing = self.direction
+
         self.direction = direction
         
     def jump(self):
@@ -75,10 +78,13 @@ class Player(Sprite):
         # update position
         prev_rect = self.rect
         self.rect = self.rect.move(dX, dY)
-        self.melRect.move(dX,dY)
+        
         self.rect.clamp_ip(level.bounds)  
         
         for sprite in self.touches(level.solidTiles):
+            if isinstance(sprite, DirtyTile):
+                sprite.clean()
+                
             rect = sprite.rect 
             
             # collide with walls
@@ -107,13 +113,19 @@ class Player(Sprite):
                 elif self.jumping > 0 and not ((self.rect.left <= rect.right and prev_rect.left >= rect.right) or (self.rect.right >= rect.left and prev_rect.right <= rect.left)):
                     self.jumping = 0
                     self.rect.bottom = rect.top
+
+        self.cleanRect.topleft = self.rect.topleft
+        
+        if self.meleeGroup is not None:
+            self.meleeGroup.update(dT)
+                
                     
                     
 
                     
     def shoot(self):
         if self.ammo > 0:
-            bullet = Bullet(self.rect.x, self.rect.y, self.direction, 0)
+            bullet = Bullet(self.rect.x, self.rect.y, self.facing, 0)
             self.bullets.add(bullet)
             self.ammo -= 1
             print self.ammo
@@ -122,19 +134,11 @@ class Player(Sprite):
         
         self.melee = True
         if self.melee:
-            print "Here"
-            draw.rect(self.melImage, (0,0,255), self.melImage.get_rect())
+            self.attack = MelRect(self)
+            self.meleeGroup.add(self.attack)
             
-            self.timer+=1
-            print self.timer
-            if self.timer > 10:
-                self.timer = 0
-                self.melee = False
-                
             
-##            
-##                self.melImage.fill(0,255,0)
-##                self.melee = False
+        
             
             
             

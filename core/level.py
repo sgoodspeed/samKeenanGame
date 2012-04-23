@@ -46,6 +46,20 @@ class Tile(Sprite):
         self.rect.topleft = (x,y)
         self.tileType = tileType
 
+class DirtyTile(Tile):
+    def __init__(self, tileImage, cleanImage, x, y, tileType):
+        Tile.__init__(self, tileImage, True, x, y, tileType)
+        self.cleanImage = cleanImage
+        self.cleaned = False
+
+    def clean(self):
+        if not self.cleaned:
+            self.cleaned = True
+            self.image = self.cleanImage
+            draw.rect(self.image, (0,0,255), self.image.get_rect())
+            print "blah"
+        
+
 
 ## Tilesheet class
 class TileSheet(object):
@@ -78,9 +92,12 @@ class TileSheet(object):
                 tileImage = self.tilemap.get(cell)
                 if tileImage:
                     isSolid = cell in TILE_SOLIDS # If the cell is in the solid list then it should be solid
-                    if cell == "o": # o = door
-                        doorLoc = x*self.w, y*self.h
-                    tile = Tile(tileImage, isSolid, x*self.w, y*self.h, cell)
+                    if cell in DIRTY_TILES:
+                        tile = DirtyTile(tileImage, tileImage, x*self.w, y*self.h, cell) # We need to assign a secondary image here where it says tileImage the second time that will display when it's cleaned
+                    else:
+                        if cell == "o": # o = door
+                            doorLoc = x*self.w, y*self.h
+                        tile = Tile(tileImage, isSolid, x*self.w, y*self.h, cell)
                     if isSolid:
                         solidTileGroup.add(tile)
                     tileGroup.add(tile) # Create a Tile object with the correct image

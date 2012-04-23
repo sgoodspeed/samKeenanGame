@@ -31,3 +31,43 @@ class Bullet(Sprite):
         # Kill if we're out of the level
         if not level.bounds.contains(self.rect):
             self.kill()
+
+class MelRect(Sprite):
+    color = 0,0,255
+    damage = MELEE_DAMAGE
+    rectSize = MELEE_SIZE
+    def __init__(self,player):
+        Sprite.__init__(self)
+        self.player = player
+        if self.player.facing == 1:
+            self.rect = Rect(self.player.rect.midright,self.rectSize)
+        elif self.player.facing == -1:
+            self.rect = Rect((self.player.rect.midleft[0]-self.rectSize[0],self.player.rect.midleft[1]),self.rectSize)
+        
+        self.image = Surface(self.rect.size)
+        draw.rect(self.image, self.color, self.rect)
+        self.timer = 0
+
+        #Collision-y code stuff
+        self.hasHurt = []
+    def update(self,dT):
+        self.timer+=dT
+        if self.player.facing == 1:
+            self.rect.midleft = self.player.rect.midright
+        elif self.player.facing == -1:
+            self.rect.midright = self.player.rect.midleft
+        
+        self.rect.midleft
+        #print self.timer
+        if self.timer > .40:
+            
+            self.kill()
+    def hurt(self, enemy, level):
+        if enemy not in self.hasHurt:
+            self.hasHurt.append(enemy)
+            enemy.takeDamage(MELEE_DAMAGE, level)
+
+
+        
+        
+        

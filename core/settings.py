@@ -10,12 +10,16 @@ TILE_MAP_COORDS = { "~": (395,236),
                     "%": (385,289),
                     ".": (192,96),
                     "&": (32,32),
-                    "o": (0,0)
+                    "o": (0,0),
+                    ",": (69,69)
                     }
 TILE_SOLIDS = [ ".", 
                 "&", 
-                "%"
+                "%",
+                ","
                 ]
+
+DIRTY_TILES = [","]
 
 ### PLAYER
 PLAYER_SIZE = PLY_W, PLY_H = T_W*.75, T_H*.75
@@ -32,10 +36,14 @@ RAT_DAMAGE = 15
 RAT_HEALTH = 30
 
 
-### PROJECTILES
+### ATTACKS
 BULLET_SIZE = PLY_W*2, PLY_H
 BULLET_SPEED = 400
 BULLET_DAMAGE = 10
+
+MELEE_DAMAGE = 15
+MELEE_SIZE = (100,10)
+
 
 ### PICKUPS
 AMMO_SIZE = (T_W*.4, T_H*.4)

@@ -15,9 +15,7 @@ class Pickup(Sprite):
                 touching.add(sprite)
         return touching
 
-    def update(self, dT, level):
-        self.vX = self.direction * PICKUP_THROW_SPEED # This doesn't actually MOVE anything, it just sets velocity
-        
+    def update(self, dT, level):        
         dT = dT / 1000.0
         
         self.vY -= dT * GRAVITY_SPEED
@@ -51,11 +49,11 @@ class Pickup(Sprite):
                     self.rect.bottom = rect.top
                     self.vX = 0
 
-
 class AmmoPickup(Pickup):
     def __init__(self, x, y, direction, vY):
         Pickup.__init__(self)
         self.direction = direction
+        self.vX = self.direction * PICKUP_THROW_SPEED
         self.rect = Rect((x,y), AMMO_SIZE)
         self.image = Surface(self.rect.size)
         draw.rect(self.image, (255,0,0), self.image.get_rect())
