@@ -16,7 +16,6 @@ from core.cameraJunk.camera import *
 from world.door import Door
 from core.collisions import collisionCheck
 
-#Continuing on with melee attacks: the draw isn't working, it's because the function for melee attack runs once each time you press it, rather than continuously ten times through when the key is pressed once. Ideas: While loop, sepratare method, etc.
 
 
 # controls/player.py
@@ -25,6 +24,9 @@ class PlayerController(KeyListener, MouseListener):
     k_moveLeft = K_LEFT
     k_moveRight = K_RIGHT
     def __init__(self, player):
+        self.timer = 0
+        self.mel = False
+        self.coolDown = False
         self.player = player
         self.pressed = {}
         
@@ -37,11 +39,21 @@ class PlayerController(KeyListener, MouseListener):
         
             elif event.key == K_z:
                 self.player.shoot()
-            elif event.key == K_x:
+            elif event.key == K_x and not self.mel:
                 self.player.meleeAttack()
+                self.mel = True
             
             
-    def update(self):
+    def update(self, dT):
+        self.dT = dT
+        if self.mel:
+            self.timer+=self.dT
+            print self.timer
+        if self.timer > 1000:
+            self.mel = False
+            self.timer = 0
+
+            
         if self.pressed.get(self.k_moveLeft) and self.pressed.get(self.k_moveRight):
             self.player.move(0)
         elif self.pressed.get(self.k_moveLeft):
@@ -119,7 +131,8 @@ class Game(Application):
     def update(self):
         # update
         dT = min(200, self.clock.get_time())
-        self.pc.update()
+        
+        self.pc.update(dT)
         collisionCheck(self.playerGroup, self.currLevel.enemies, self.currLevel.ammo, self.currLevel)
         
         self.cam.update(self.player.rect)

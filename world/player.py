@@ -13,7 +13,7 @@ class Player(Sprite):
     decay = 0
     gravity = True
     melee = False
-    timer = 0
+    
     
     
     def __init__(self):
@@ -36,6 +36,7 @@ class Player(Sprite):
         self.ammo = 9001
         self.health = 100
         self.facing = 1
+        self.timer = 0
         
 
     def move(self, direction):
@@ -68,6 +69,7 @@ class Player(Sprite):
 
     def update(self, dT, level):
         dT = dT / 1000.0
+        self.dT = dT #For use in meleeAttack
         
         self.vY -= dT * GRAVITY_SPEED
         dX = self.vX * dT
@@ -136,7 +138,8 @@ class Player(Sprite):
         if self.melee:
             self.attack = MelRect(self)
             self.meleeGroup.add(self.attack)
-            
+            self.timer = 0
+        
             
         
             
