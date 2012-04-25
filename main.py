@@ -48,7 +48,7 @@ class PlayerController(KeyListener, MouseListener):
         self.dT = dT
         if self.mel:
             self.timer+=self.dT
-            print self.timer
+            #print self.timer
         if self.timer > 1000:
             self.mel = False
             self.timer = 0
@@ -168,4 +168,4 @@ if __name__ == "__main__":
     game.run()
 
 pygame.quit()
-print "Program complete"
+#print "Program complete"

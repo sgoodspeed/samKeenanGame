@@ -39,11 +39,17 @@ class MelRect(Sprite):
     def __init__(self,player):
         Sprite.__init__(self)
         self.player = player
+        #print self.facing
         if self.player.facing == 1:
+            print "Facing right melee"
             self.rect = Rect(self.player.rect.midright,self.rectSize)
         elif self.player.facing == -1:
+            print "Facing left melee"
             self.rect = Rect((self.player.rect.midleft[0]-self.rectSize[0],self.player.rect.midleft[1]),self.rectSize)
-        
+        else:
+            print "No facing variable"
+            self.player.facing = 1
+            self.rect = Rect(self.player.rect.midright,self.rectSize)
         self.image = Surface(self.rect.size)
         draw.rect(self.image, self.color, self.rect)
         self.timer = 0
