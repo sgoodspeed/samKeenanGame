@@ -11,7 +11,8 @@ TILE_MAP_COORDS = { "~": (395,236),
                     ".": (192,96),
                     "&": (32,32),
                     "o": (0,0),
-                    ",": (69,69)
+                    ",": (69,69),
+                    "CLEAN1": (96,96)
                     }
 TILE_SOLIDS = [ ".", 
                 "&", 
@@ -20,6 +21,8 @@ TILE_SOLIDS = [ ".",
                 ]
 
 DIRTY_TILES = [","]
+
+DIRTY_TILES_CLEAN = {",": "CLEAN1"}
 
 ### PLAYER
 PLAYER_SIZE = PLY_W, PLY_H = T_W, T_H*2.2
@@ -34,6 +37,14 @@ RAT_SIZE = (T_W*1.5, T_H*1.5)
 RAT_SPEED = 150
 RAT_DAMAGE = 15
 RAT_HEALTH = 30
+
+##Frank's Variables
+FRANK_SIZE = (T_W*.8, T_H*1)
+FRANK_SPEED = 100
+FRANK_DAMAGE = 30
+FRANK_HEALTH = 50
+FRANK_BOUNDS_SIZE = 100
+
 
 
 ### ATTACKS

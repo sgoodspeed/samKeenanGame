@@ -9,15 +9,15 @@ from world.pickUp import *
 from core.settings import *
 from main import *
 from random import *
-class rat(Sprite):
+import math
+class Enemy(Sprite):
     vY = 0
     vX = 0
-    damage = RAT_DAMAGE
-    health = RAT_HEALTH
+    
     def __init__(self, startPos):
         Sprite.__init__(self)
         self.direction = randrange(-1,2,2)
-        self.rect = Rect(startPos,RAT_SIZE)
+        self.rect = Rect(startPos,self.size)
         self.image = Surface(self.rect.size)
         draw.rect(self.image, (143,55,0), self.image.get_rect())
 
@@ -29,8 +29,11 @@ class rat(Sprite):
                 touching.add(sprite)
         return touching
 
-    def update(self, dT, level):
-        self.vX = self.direction * RAT_SPEED # This doesn't actually MOVE anything, it just sets velocity
+    def update(self, dT, level, player):
+
+        distance = self.getDistance(player.rect.center)
+        
+        self.vX = self.direction * self.speed # This doesn't actually MOVE anything, it just sets velocity
         
         dT = dT / 1000.0
         
@@ -79,3 +82,35 @@ class rat(Sprite):
             self.kill()
             level.ammo.add(AmmoPickup(self.rect.x, self.rect.y, self.direction, 300))
             
+    def getDistance(self,playerPos):
+        x1,y1 = self.rect.center
+        x2,y2 = playerPos
+        d = math.sqrt((x2-x1)**2 + (y2 - y1)**2)
+        return d
+
+    
+class rat(Enemy):
+    damage = RAT_DAMAGE
+    health = RAT_HEALTH
+    size = RAT_SIZE
+    speed = RAT_SPEED
+    pass
+
+class Frank(Enemy):
+    damage = FRANK_DAMAGE
+    health = FRANK_HEALTH
+    size = FRANK_SIZE
+    speed = FRANK_SPEED
+
+    def __init__(self, startPos):
+        Enemy.__init__(self, startPos)
+        self.areaBounds = Rect((self.rect.x-FRANK_BOUNDS_SIZE, self.rect.y+FRANK_SIZE[1]), (FRANK_BOUNDS_SIZE, FRANK_SIZE[1]))
+        self.image.width = self.areaBounds.width
+        self.image.height = self.areaBounds.height
+        draw.rect(self.image, (255,0,0), self.areaBounds)
+        print self.areaBounds
+
+    def update(self, dT, level, player):
+        #self.rect.clamp_ip(self.areaBounds)
+        Enemy.update(self, dT, level, player)
+    

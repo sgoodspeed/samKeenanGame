@@ -56,8 +56,8 @@ class DirtyTile(Tile):
         if not self.cleaned:
             self.cleaned = True
             self.image = self.cleanImage
-            draw.rect(self.image, (0,0,255), self.image.get_rect())
-            print "blah"
+            #draw.rect(self.image, (0,0,255), self.image.get_rect())
+            print "blah"        
         
 
 
@@ -82,6 +82,7 @@ class TileSheet(object):
         size = (cols * self.w, rows * self.h) # The size of the level is the number of rows and cols in the .lvl file times the height and width of each tile
         tileGroup = Group()
         solidTileGroup = Group()
+        dirtyTileGroup = Group()
         
         # Loop through the .lvl file
         for y, row in enumerate(data):
@@ -93,7 +94,10 @@ class TileSheet(object):
                 if tileImage:
                     isSolid = cell in TILE_SOLIDS # If the cell is in the solid list then it should be solid
                     if cell in DIRTY_TILES:
-                        tile = DirtyTile(tileImage, tileImage, x*self.w, y*self.h, cell) # We need to assign a secondary image here where it says tileImage the second time that will display when it's cleaned
+                        cleanCoord = DIRTY_TILES_CLEAN[cell]
+                        cleanImage = self.tilemap.get(cleanCoord)
+                        tile = DirtyTile(tileImage, cleanImage, x*self.w, y*self.h, cell) # We need to assign a secondary image here where it says tileImage the second time that will display when it's cleaned
+                        dirtyTileGroup.add(tile)
                     else:
                         if cell == "o": # o = door
                             doorLoc = x*self.w, y*self.h
@@ -101,7 +105,7 @@ class TileSheet(object):
                     if isSolid:
                         solidTileGroup.add(tile)
                     tileGroup.add(tile) # Create a Tile object with the correct image
-        return tileGroup, solidTileGroup, size, doorLoc
+        return tileGroup, solidTileGroup, dirtyTileGroup, size, doorLoc
         
 # Level class
 # This holds the actual final rendered image of the level according to the .lvl file, rendered with tiles from the tilemap image
@@ -113,7 +117,7 @@ class Level(object):
         f.close()
                 
         self.name = name
-        self.tiles, self.solidTiles, size, self.doorLoc = tilesheet.render(data)
+        self.tiles, self.solidTiles, self.dirtyTiles, size, self.doorLoc = tilesheet.render(data)
         self.bounds = Rect((0,0), size)
         
         self.enemies = createEnemies(data)

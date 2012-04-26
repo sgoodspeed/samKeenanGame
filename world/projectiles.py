@@ -15,7 +15,10 @@ class Bullet(Sprite):
         self.image = Surface(self.rect.size)
         draw.rect(self.image, self.color, self.rect)
         self.dirY = dirY
-        self.dirX = dirX
+        if dirX != 1 and dirX != -1:
+            self.dirX = 1
+        else:
+            self.dirX = dirX
     
     def update(self, dT, level):        
         dY = int(self.dirY*BULLET_SPEED*dT)

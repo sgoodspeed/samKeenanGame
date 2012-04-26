@@ -6,8 +6,8 @@ from level import *
 from pygame.sprite import *
 from core.settings import *
 
-def collisionCheck(player,enemyGroup, ammoGroup, level):
-    for enemy in groupcollide(enemyGroup, player, False, False):
+def collisionCheck(game,player,level):
+    for enemy in groupcollide(level.enemies, player, False, False):
         if player.sprite.vX != 0:
             player.sprite.vX = player.sprite.direction*PLAYER_SPEED*-1.5
         else:
@@ -17,12 +17,16 @@ def collisionCheck(player,enemyGroup, ammoGroup, level):
         player.sprite.thrown = True
         
     
-    for enemy in groupcollide(enemyGroup, player.sprite.bullets, False, True):
+    for enemy in groupcollide(level.enemies, player.sprite.bullets, False, True):
         enemy.takeDamage(BULLET_DAMAGE, level)
 
-    for ammo in groupcollide(ammoGroup, player, True, False):
+    for ammo in groupcollide(level.ammo, player, True, False):
         player.sprite.ammo += AMMO_AMOUNT
      
-    for melee, enemies in groupcollide(player.sprite.meleeGroup, enemyGroup, False,False).items():
+    for melee, enemies in groupcollide(player.sprite.meleeGroup, level.enemies, False,False).items():
         for enemy in enemies:
             melee.hurt(enemy, level)
+
+    if level.door.rect.colliderect(player.sprite.rect) and player.sprite.doorChange:
+        game.changing = True
+        

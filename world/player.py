@@ -37,6 +37,7 @@ class Player(Sprite):
         self.health = 100
         self.facing = 1
         self.timer = 0
+        self.doorChange = False
         
 
     def move(self, direction):
@@ -130,7 +131,7 @@ class Player(Sprite):
             bullet = Bullet(self.rect.x, self.rect.y, self.facing, 0)
             self.bullets.add(bullet)
             self.ammo -= 1
-            print self.ammo
+            
             
     def meleeAttack(self):
         

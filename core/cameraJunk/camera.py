@@ -20,6 +20,11 @@ class Camera(object):
     def draw_background(self, surf, bg):
         surf.blit(bg, (-self.rect.x, -self.rect.y))
 
+    def draw_background_alpha(self, surf, bg, alpha):
+        new_bg = bg.copy()
+        new_bg.set_alpha(alpha)
+        surf.blit(new_bg, (-self.rect.x, -self.rect.y))
+
     def draw_sprite(self, surf, sprite):
         if self.rect.colliderect(sprite.rect):
             surf.blit(sprite.image, rel_rect(sprite.rect, self.rect))
@@ -28,3 +33,9 @@ class Camera(object):
         for sprite in group:
             if self.rect.colliderect(sprite.rect):
                 surf.blit(sprite.image, rel_rect(sprite.rect, self.rect))
+
+    def draw_sprite_alpha(self, surf, sprite, alpha):
+        if self.rect.colliderect(sprite.rect):
+           new_sprite = sprite.image.copy()
+           new_sprite.set_alpha(alpha)
+           surf.blit(new_sprite, rel_rect(sprite.rect, self.rect))
