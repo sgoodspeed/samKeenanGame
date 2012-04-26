@@ -101,16 +101,22 @@ class Frank(Enemy):
     health = FRANK_HEALTH
     size = FRANK_SIZE
     speed = FRANK_SPEED
+    boundSize = FRANK_BOUNDS
 
     def __init__(self, startPos):
         Enemy.__init__(self, startPos)
-        self.areaBounds = Rect((self.rect.x-FRANK_BOUNDS_SIZE, self.rect.y+FRANK_SIZE[1]), (FRANK_BOUNDS_SIZE, FRANK_SIZE[1]))
-        self.image.width = self.areaBounds.width
-        self.image.height = self.areaBounds.height
-        draw.rect(self.image, (255,0,0), self.areaBounds)
-        print self.areaBounds
+        self.leftBound = self.rect.left - self.boundSize
+        self.rightBound = self.rect.right + self.boundSize
+##        self.areaBounds = Rect((self.rect.x-FRANK_BOUNDS_SIZE, self.rect.y+FRANK_SIZE[1]), (FRANK_BOUNDS_SIZE, FRANK_SIZE[1]))
+##        self.image.width = self.areaBounds.width
+##        self.image.height = self.areaBounds.height
+##        draw.rect(self.image, (255,0,0), self.areaBounds)
+##        print self.areaBounds
 
     def update(self, dT, level, player):
-        #self.rect.clamp_ip(self.areaBounds)
+        if self.rect.left<self.leftBound:
+            self.direction*=-1
+        if self.rect.right>self.rightBound:
+            self.direction*=-1
         Enemy.update(self, dT, level, player)
     
