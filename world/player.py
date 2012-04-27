@@ -4,7 +4,7 @@ from pygame.sprite import *
 from pygame import Surface,Rect,draw
 from projectiles import *
 from core.settings import *
-from core.level import *
+from core.level import DirtyTile
 
 class Player(Sprite):
     vX = 0

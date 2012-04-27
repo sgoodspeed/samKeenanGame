@@ -55,15 +55,15 @@ class PlayerController(KeyListener, MouseListener):
             self.mel = False
             self.timer = 0
 
-            
-        if self.pressed.get(self.k_moveLeft) and self.pressed.get(self.k_moveRight):
-            self.player.move(0)
-        elif self.pressed.get(self.k_moveLeft):
-            self.player.move(-1)
-        elif self.pressed.get(self.k_moveRight):
-            self.player.move(1)
-        else:
-            self.player.move(0)
+        if not self.player.thrown:  
+            if self.pressed.get(self.k_moveLeft) and self.pressed.get(self.k_moveRight):
+                self.player.move(0)
+            elif self.pressed.get(self.k_moveLeft):
+                self.player.move(-1)
+            elif self.pressed.get(self.k_moveRight):
+                self.player.move(1)
+            else:
+                self.player.move(0)
         
             
     def on_keyup(self,event):

@@ -1,9 +1,9 @@
-import os
+#import os
 import pygame
 from pygame.locals import *
 
-from core.app import Application
-from world.player import *
+#from core.app import Application
+#from world.player import *
 
 
 
