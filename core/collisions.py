@@ -1,5 +1,3 @@
-import pygame
-
 from pygame.sprite import *
 from core.settings import *
 from enemies import *
@@ -27,7 +25,9 @@ def collisionCheck(game,player,level):
     for melee, enemies in groupcollide(player.sprite.meleeGroup, level.enemies, False,False).items():
         for enemy in enemies:
             melee.hurt(enemy, level)
-
-    if level.door.rect.colliderect(player.sprite.rect) and player.sprite.doorChange:
-        game.changing = True
+    
+    if player.sprite.doorChange:
+        for door, player in groupcollide(level.doors, player, False, False).items():
+         game.nextLevel = door.nextLevel
+         game.changing = True
         

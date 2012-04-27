@@ -1,4 +1,3 @@
-import pygame
 from pygame import Surface,Rect,draw
 from pygame.sprite import *
 from core.settings import *

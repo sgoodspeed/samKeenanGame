@@ -1,4 +1,3 @@
-import pygame
 from pygame.locals import *
 from pygame.sprite import *
 from pygame import Surface,Rect,draw
@@ -13,8 +12,6 @@ class Player(Sprite):
     decay = 0
     gravity = True
     melee = False
-    
-    
     
     def __init__(self):
         Sprite.__init__(self)
@@ -52,9 +49,9 @@ class Player(Sprite):
         self.vY = PLAYER_JUMP_SPEED
         self.jumping +=1
 
-    def changeLevel(self):
-        self.rect.x = PLAYER_START_X
-        self.rect.y = PLAYER_START_Y
+    def changeLevel(self, startCoords):
+        #print startCoords, self.rect.bottomleft
+        self.rect.bottomleft = startCoords
         self.vY = 0
         self.vX = 0
         self.jumping = 0
@@ -140,14 +137,8 @@ class Player(Sprite):
             self.attack = MelRect(self)
             self.meleeGroup.add(self.attack)
             self.timer = 0
-        
-            
-        
-            
-            
-            
-    
+
     def takeDamage(self,damageAmount):
         self.health-=damageAmount
         if self.health <=0:
-            print "Felsfelsfelsfelsfelsfelsfelsfelsfels"     
+            pass

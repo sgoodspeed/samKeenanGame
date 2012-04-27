@@ -1,12 +1,12 @@
 #! /usr/bin/env python
 import os
 
-import pygame
 from pygame.locals import *
 from pygame.sprite import *
-from pygame import Surface,Rect,draw
+from pygame import Surface,Rect
 from core.settings import *
 from enemies import *
+from world.door import Door
 
 # This just loads the tilemap image from data/images/[name].bmp
 def load_image(name, colorkey=None):
@@ -30,7 +30,7 @@ def createEnemies(data):
             enemyType = str(lineData[0])
             x = int(lineData[1])
             y = int(lineData[2])
-            enemyClass = eval(enemyType + "((x,y))")
+            enemyClass = globals()[enemyType]((x,y))
             enemiesGroup.add(enemyClass)
     
     return enemiesGroup
@@ -55,9 +55,7 @@ class DirtyTile(Tile):
     def clean(self):
         if not self.cleaned:
             self.cleaned = True
-            self.image = self.cleanImage
-            #draw.rect(self.image, (0,0,255), self.image.get_rect())
-            print "blah"        
+            self.image = self.cleanImage        
         
 
 
@@ -83,12 +81,17 @@ class TileSheet(object):
         tileGroup = Group()
         solidTileGroup = Group()
         dirtyTileGroup = Group()
+        doorGroup = Group()
+
         
         # Loop through the .lvl file
         for y, row in enumerate(data):
+            tileOffset = 0
             if row == "EOL":
-               break
+                break
             for x, cell in enumerate(row):
+                if cell.isdigit():
+                    tileOffset += self.w
                 # Get the image that corresponds to this cell
                 tileImage = self.tilemap.get(cell)
                 if tileImage:
@@ -96,42 +99,49 @@ class TileSheet(object):
                     if cell in DIRTY_TILES:
                         cleanCoord = DIRTY_TILES_CLEAN[cell]
                         cleanImage = self.tilemap.get(cleanCoord)
-                        tile = DirtyTile(tileImage, cleanImage, x*self.w, y*self.h, cell) # We need to assign a secondary image here where it says tileImage the second time that will display when it's cleaned
+                        tile = DirtyTile(tileImage, cleanImage, x*self.w-tileOffset, y*self.h, cell) # We need to assign a secondary image here where it says tileImage the second time that will display when it's cleaned
                         dirtyTileGroup.add(tile)
                     else:
                         if cell == "o": # o = door
-                            doorLoc = x*self.w, y*self.h
-                        tile = Tile(tileImage, isSolid, x*self.w, y*self.h, cell)
+                            nextLevel = row[x+1]
+                            door = Door(nextLevel, (x*self.w-tileOffset, y*self.h))
+                            doorGroup.add(door)
+                        tile = Tile(tileImage, isSolid, x*self.w-tileOffset, y*self.h, cell)
                     if isSolid:
                         solidTileGroup.add(tile)
                     tileGroup.add(tile) # Create a Tile object with the correct image
-        return tileGroup, solidTileGroup, dirtyTileGroup, size, doorLoc
+        return tileGroup, solidTileGroup, dirtyTileGroup, size, doorGroup
         
 # Level class
 # This holds the actual final rendered image of the level according to the .lvl file, rendered with tiles from the tilemap image
 class Level(object):
-    def __init__(self, name, tilesheet):
+    def __init__(self, name, tilesheet, index):
         path = os.path.join("data", "levels", name) + ".lvl"
         f = open(path, "r")
         data = f.read().replace("\r", "").strip().split("\n")
         f.close()
-                
+        
+        self.index = index	
+        self.doors = []
         self.name = name
-        self.tiles, self.solidTiles, self.dirtyTiles, size, self.doorLoc = tilesheet.render(data)
+        self.tiles, self.solidTiles, self.dirtyTiles, size, self.doors = tilesheet.render(data)
         self.bounds = Rect((0,0), size)
         
         self.enemies = createEnemies(data)
 
         self.ammo = Group()
         
+        self.render_background()
+        
     def render_background(self):
         self.background = Surface(self.bounds.size)
         self.tiles.draw(self.background)
-        self.door.draw(self.background)
+        self.doors.draw(self.background)
         
-    def addDoor(self, door):
-        self.door = door
-        self.door.rect.topleft = self.doorLoc
-        self.render_background()
+    def getStartPos(self, prevLevel):
+        for door in self.doors:
+            if int(door.nextLevel) == int(prevLevel):
+                return door.rect.bottomleft
+
 
 

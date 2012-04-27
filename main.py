@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 
-import os
 import pygame
 from pygame.locals import *
 
 from core.settings import *
-from core.input import InputManager, KeyListener, MouseListener
+from core.input import KeyListener, MouseListener
 from core.app import Application
 from core.hud import *
 from world.player import *
@@ -122,12 +121,10 @@ class Game(Application):
         self.tileSheet = TileSheet(self.img_tiles, (TILE_SIZE)) 
         
         # Create an array of all the levels
+        index = 0
         for levelFile in LEVELS:
-            self.levels.append(Level(levelFile, self.tileSheet))
-            
-        for key,link in enumerate(LEVEL_LINKS):
-            door = Door(self.levels[link], (150,504))
-            self.levels[key].addDoor(door)
+            self.levels.append(Level(levelFile, self.tileSheet, index))
+            index += 1
     
         self.currLevel = self.levels[0]
         self.count = 0
@@ -140,22 +137,23 @@ class Game(Application):
         self.gameArea.fill((0,0,0))
         if self.timer < 1500:
             self.fadeAlpha -= 10
-            #self.cam.draw_sprite_alpha(self.gameArea, self.player, self.fadeAlpha+5)
             self.cam.draw_background_alpha(self.gameArea, self.currLevel.background, self.fadeAlpha)
+            self.cam.draw_sprite_group_alpha(self.gameArea, self.currLevel.dirtyTiles, self.fadeAlpha)
             self.check = True
             
         if self.timer > 1500 and self.check:
+            prevLevel = self.currLevel.index
             self.currLevel = nextLevel
-            self.player.changeLevel()
-            #self.cam.draw_background_alpha(self.gameArea, self.currLevel.background, 0)
-            #self.cam.draw_sprite_alpha(self.gameArea, self.player, 0)
+            startCoords = self.currLevel.getStartPos(prevLevel)
             self.check = False
+            self.player.changeLevel(startCoords)
+            self.cam.update(self.player.rect)
             
         if self.timer < 3000 and self.timer > 1500:
             self.fadeAlpha += 10
+            self.cam.draw_sprite_alpha(self.gameArea, self.player, 0)
             self.cam.draw_background_alpha(self.gameArea, self.currLevel.background, self.fadeAlpha)
-            #self.cam.draw_sprite_alpha(self.gameArea, self.player, self.fadeAlpha)
-
+            self.cam.draw_sprite_group_alpha(self.gameArea, self.currLevel.dirtyTiles, self.fadeAlpha)
             
         if self.timer > 3000:    
             self.timer = 0
@@ -166,7 +164,8 @@ class Game(Application):
         # update
         dT = min(200, self.clock.get_time())
         if self.changing:
-            self.changeLevel(self.currLevel.door.nextLevel,dT)
+            nextLevelIndex = int(self.nextLevel)
+            self.changeLevel(self.levels[nextLevelIndex],dT)
             return
         self.pc.update(dT)
         collisionCheck(self, self.playerGroup, self.currLevel)
@@ -174,9 +173,7 @@ class Game(Application):
         self.cam.update(self.player.rect)
         
         self.playerGroup.update(dT, self.currLevel)
-        self.currLevel.enemies.update(dT, self.currLevel, self.player) # We shouldn't need to pass self.currLevel to a group that's owned by currLevel
-
-        ##This is where the method for door collision and movement and level change happens 
+        self.currLevel.enemies.update(dT, self.currLevel, self.player)
         
         self.currLevel.ammo.update(dT, self.currLevel)
 

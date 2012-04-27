@@ -71,5 +71,4 @@ AMMO_AMOUNT = 15
 #    level 1 links to level 2
 #    etc.
 LEVELS =      ["0","1","2"]
-LEVEL_LINKS = [1, 2, 0]
 TILEMAP_IMAGE = "tiles"
