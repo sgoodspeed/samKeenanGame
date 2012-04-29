@@ -8,6 +8,7 @@ from random import *
 import math
 from anim import Animation, AnimationFrames
 from core.spritesheet import SpriteSheet
+from world.projectiles import Sponge,MelRect
 
 class Enemy(Sprite):
     vY = 0
@@ -22,6 +23,7 @@ class Enemy(Sprite):
         self.onGround = False
         self.timer = 0
         self.dying = False
+        self.directed = False
 
     def touches(self, group):
         touching = Group()
@@ -60,10 +62,12 @@ class Enemy(Sprite):
                 if self.rect.left <= rect.right and prev_rect.left >= rect.right:
                     self.rect.left = rect.right+1
                     self.direction *=-1
+                    self.directed = True
                 
                 if self.rect.right >= rect.left and prev_rect.right <= rect.left:
                     self.rect.right = rect.left-1
                     self.direction *=-1
+                    self.directed = True
                 
             # handle cielings
             #if rect.left < self.rect.right and self.rect.left < rect.right:
@@ -97,7 +101,7 @@ class Enemy(Sprite):
     def die(self, level, dT=0):
         if not self.dying:
             self.dying = True
-            level.ammo.add(AmmoPickup(self.rect.x, self.rect.y, self.direction, 300))
+            level.ammo.add(Sponge(self.rect.x, self.rect.y, self.direction, 300))
         self.timer += dT
         if self.timer > 1500:
             self.kill()
@@ -212,3 +216,75 @@ class Frank(Enemy):
         else:
             return False
             
+
+class Goblin(Enemy):
+    damage = GOB_DAMAGE
+    health = GOB_HEALTH
+    size = GOB_SIZE
+    speed = GOB_SPEED
+    boundSize = GOB_BOUNDS
+    weight = GOB_WEIGHT
+    attackDist = GOB_ATTACK_DIST
+    meleeGroup = Group()
+
+    def __init__(self, startPos):
+        Enemy.__init__(self, startPos)
+        self.melee = False
+        self.leftBound = self.rect.left - self.boundSize
+        self.rightBound = self.rect.right + self.boundSize
+        self.timer = 0
+        self.state = "roaming"
+        self.attacking = False
+        self.pick = 0
+
+
+    def update(self, dT, level, player):
+        self.timer += dT
+        
+        if self.melee:
+            self.attackTimer +=dT
+            if self.attackTimer >= 700:
+                self.melee = False
+        if self.timer >3000:
+            self.pick = randrange(0,3)
+            self.directed = False
+            self.timer = 0
+        if self.pick == 0:
+            self.pause()
+            self.timer
+        elif self.pick == 1:
+            self.moveRight()
+        elif self.pick == 2:
+            self.moveLeft()
+        Enemy.update(self,dT,level,player)
+        self.facing = self.direction
+        
+        
+        if abs(self.distance)<400:
+            self.direction = self.distance / abs(self.distance)
+            self.directed = True
+            if abs(self.distance)<100:
+                self.melAttack()
+            
+            
+                    
+    def moveLeft(self):
+        if not self.directed:
+           self.direction = -1
+        
+
+    def moveRight(self):
+        if not self.directed:
+            self.direction = 1
+
+    def pause(self):
+        if not self.directed:
+            self.direction = 0
+
+    def melAttack(self):
+        if not self.melee:
+            self.melee = True
+        if self.melee:
+            self.attack = MelRect(self)
+            self.meleeGroup.add(self.attack)
+            self.attackTimer = 0

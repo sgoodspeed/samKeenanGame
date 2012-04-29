@@ -3,7 +3,7 @@ from pygame.locals import *
 from pygame.sprite import *
 from pygame import draw, Surface
 from core.settings import *
-from pickUp import Pickup, AmmoPickup
+from pickUp import Pickup
 
 
 class Weapon(object):
@@ -20,8 +20,10 @@ class Sponge(Pickup, Weapon):
     def __init__(self, x, y, direction, vY):
         Pickup.__init__(self)
         self.direction = direction
+        
         self.vX = self.direction * SPONGE_THROW_SPEED
         self.rect = Rect((x,y), SPONGE_SIZE)
+        
         self.image = Surface(self.rect.size)
         draw.rect(self.image, (255,0,0), self.image.get_rect())
         self.vY = vY

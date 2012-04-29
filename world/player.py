@@ -20,8 +20,8 @@ class PlayerAnimation(Animation):
         self.y = self._rows["still"]
     
         spritesheet = SpriteSheet(image, (2, 9), colorkey=(255,255,255))
-        frames = [ (duration, 0),
-                   (duration, 1)]
+        frames = [ (duration, 0)]
+                   #(duration, 1)]
 
         Animation.__init__(self, spritesheet, frames)
 
@@ -170,7 +170,12 @@ class Player(Sprite):
                     
     def shoot(self):
         if self.ammo > 0:
-            bullet = Sponge(self.rect.x, self.rect.y, self.facing, SPONGE_THROW_SPEED)
+            if self.facing == 1:
+                bullet = Sponge(self.rect.right,self.rect.top, self.facing, SPONGE_THROW_SPEED)
+            elif self.facing == -1:
+                bullet = Sponge(self.rect.left,self.rect.top, self.facing, SPONGE_THROW_SPEED)
+            else:
+                bullet = Sponge(self.rect.x,self.rect.y,self.facing,  SPONGE_THROW_SPEED)
             self.bullets.add(bullet)
             self.ammo -= 1
             
