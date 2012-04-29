@@ -3,39 +3,31 @@ from pygame.locals import *
 from pygame.sprite import *
 from pygame import draw, Surface
 from core.settings import *
+from pickUp import Pickup, AmmoPickup
 
+
+class Weapon(object):
+    def hurt(self, enemy, level, player):
+        if enemy not in self.hasHurt:
+            self.hasHurt.append(enemy)
+            enemy.takeDamage(self.damage, level)
+            enemy.vY += ENEMY_THROWBACK
+            enemy.direction = player.facing
 
 # Generic Projectile Class
-class Bullet(Sprite):
-    color = 255,0,0
-    damage = BULLET_DAMAGE
-    def __init__(self, x, y, dirX, dirY):
-        Sprite.__init__(self)
-        self.rect = Rect((x, y), BULLET_SIZE)
+class Sponge(Pickup, Weapon):
+    damage = SPONGE_DAMAGE
+    def __init__(self, x, y, direction, vY):
+        Pickup.__init__(self)
+        self.direction = direction
+        self.vX = self.direction * SPONGE_THROW_SPEED
+        self.rect = Rect((x,y), SPONGE_SIZE)
         self.image = Surface(self.rect.size)
-        draw.rect(self.image, self.color, self.rect)
-        self.dirY = dirY
-        if dirX != 1 and dirX != -1:
-            self.dirX = 1
-        else:
-            self.dirX = dirX
-    
-    def update(self, dT, level):        
-        dY = int(self.dirY*BULLET_SPEED*dT)
-        self.rect.y -= dY
-        
-        dX = int(self.dirX*BULLET_SPEED*dT)
-        self.rect.x+=dX
-        
-        # Kill if we hit a solid tile
-        if spritecollideany(self, level.solidTiles):
-            self.kill()
-        
-        # Kill if we're out of the level
-        if not level.bounds.contains(self.rect):
-            self.kill()
+        draw.rect(self.image, (255,0,0), self.image.get_rect())
+        self.vY = vY
+        self.hasHurt = []
 
-class MelRect(Sprite):
+class MelRect(Sprite, Weapon):
     color = 0,0,255
     damage = MELEE_DAMAGE
     rectSize = MELEE_SIZE
@@ -69,12 +61,7 @@ class MelRect(Sprite):
         self.rect.midleft
         #print self.timer
         if self.timer > .40:
-            
             self.kill()
-    def hurt(self, enemy, level):
-        if enemy not in self.hasHurt:
-            self.hasHurt.append(enemy)
-            enemy.takeDamage(MELEE_DAMAGE, level)
 
 
         

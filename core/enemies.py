@@ -1,14 +1,14 @@
-import os
-
 import pygame
 from pygame.locals import *
 from pygame.sprite import *
 from pygame import Surface,Rect,draw
-from world.projectiles import Bullet
 from world.pickUp import *
 from core.settings import *
 from random import *
 import math
+from anim import Animation, AnimationFrames
+from core.spritesheet import SpriteSheet
+
 class Enemy(Sprite):
     vY = 0
     vX = 0
@@ -20,6 +20,8 @@ class Enemy(Sprite):
         self.image = Surface(self.rect.size)
         draw.rect(self.image, (143,55,0), self.image.get_rect())
         self.onGround = False
+        self.timer = 0
+        self.dying = False
 
     def touches(self, group):
         touching = Group()
@@ -30,19 +32,19 @@ class Enemy(Sprite):
         return touching
 
     def update(self, dT, level, player):
+        if self.dying:
+            self.die(level, dT)
+        else:
+            self.distance = self.getDistance(player.rect.center)
         
-        self.distance = self.getDistance(player.rect.center)
-        
-        self.vX = self.direction * self.speed # This doesn't actually MOVE anything, it just sets velocity
+            self.vX = self.direction * self.speed # This doesn't actually MOVE anything, it just sets velocity
         
         dT = dT / 1000.0
-        
+    
         self.vY -= dT * (GRAVITY_SPEED * self.weight)
         dX = self.vX * dT
         dY = -self.vY * dT
-
-        
-        
+    
         # update position
         prev_rect = self.rect
         self.rect = self.rect.move(dX, dY)
@@ -52,17 +54,17 @@ class Enemy(Sprite):
 
         for sprite in self.touches(level.solidTiles):
             rect = sprite.rect 
-            
+        
             # collide with walls
             if (rect.top < self.rect.bottom-2):
                 if self.rect.left <= rect.right and prev_rect.left >= rect.right:
                     self.rect.left = rect.right+1
                     self.direction *=-1
-                    
+                
                 if self.rect.right >= rect.left and prev_rect.right <= rect.left:
                     self.rect.right = rect.left-1
                     self.direction *=-1
-                    
+                
             # handle cielings
             #if rect.left < self.rect.right and self.rect.left < rect.right:
              #   if self.rect.top <= rect.bottom and prev_rect.top >= rect.bottom:
@@ -76,13 +78,13 @@ class Enemy(Sprite):
                     self.vY = 0
                     self.rect.bottom = rect.top
                     self.onGround = True
-                    
+                    if self.dying:
+                        self.vX = 0                    
                 
     def takeDamage(self, damageAmount, level):
         self.health-=damageAmount
         if self.health <=0:
-            self.kill()
-            level.ammo.add(AmmoPickup(self.rect.x, self.rect.y, self.direction, 300))
+            self.die(level)
             
     def getDistance(self,playerPos):
         x1,y1 = self.rect.center
@@ -91,15 +93,61 @@ class Enemy(Sprite):
         d = ((x2-x1) + (y2 - y1))
         #print d
         return d
+        
+    def die(self, level, dT=0):
+        if not self.dying:
+            self.dying = True
+            level.ammo.add(AmmoPickup(self.rect.x, self.rect.y, self.direction, 300))
+        self.timer += dT
+        if self.timer > 1500:
+            self.kill()
+        
+class RatAnimation(Animation):
+    _rows = {"left": 0,
+             "right": 1,
+             "dead": 2}
 
+    def __init__(self, rat, image, duration):
+        self.rat = rat
+        self.y = self._rows["left"]
     
-class rat(Enemy):
+        spritesheet = SpriteSheet(image, (2, 3), colorkey=(255,0,0))
+        frames = [ (duration, 0),
+                   (duration, 1)]
+
+        Animation.__init__(self, spritesheet, frames)
+
+    def update(self, dt):
+        self.time += dt
+        
+        if self.rat.dying:
+            self.x = 0
+            self.y = self._rows["dead"]
+        else:
+            if self.rat.direction == 1:
+                    self.x = self.get_frame_data(self.time)
+                    self.y = self._rows["right"]
+            elif self.rat.direction == -1:
+                    self.x = self.get_frame_data(self.time)
+                    self.y = self._rows["left"]
+    
+class Rat(Enemy):
     damage = RAT_DAMAGE
     health = RAT_HEALTH
     size = RAT_SIZE
     speed = RAT_SPEED
     weight = RAT_WEIGHT
-    pass
+    
+    def __init__(self, startPos):
+        Enemy.__init__(self, startPos)
+        self.anim = RatAnimation(self, "rat", 80)
+        self.image = self.anim.get_current_frame()
+        self.rect = self.image.get_rect()
+        
+    def update(self, dT, level, player):
+        self.anim.update(dT)
+        self.image = self.anim.get_current_frame()
+        Enemy.update(self, dT, level, player)
 
 
 

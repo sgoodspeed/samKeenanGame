@@ -6,6 +6,7 @@ from core.settings import *
 class Pickup(Sprite):
     def __init__(self):
         Sprite.__init__(self)
+        self.hasBounced = False
 
     def touches(self, group):
         touching = Group()
@@ -16,8 +17,6 @@ class Pickup(Sprite):
         return touching
 
     def update(self, dT, level):        
-        dT = dT / 1000.0
-        
         self.vY -= dT * GRAVITY_SPEED
         dX = self.vX * dT
         dY = -self.vY * dT
@@ -37,17 +36,24 @@ class Pickup(Sprite):
                 if self.rect.left <= rect.right and prev_rect.left >= rect.right:
                     self.rect.left = rect.right+1
                     self.direction *=-1
+                    self.vX *= -.5
                     
                 if self.rect.right >= rect.left and prev_rect.right <= rect.left:
                     self.rect.right = rect.left-1
                     self.direction *=-1
+                    self.vX *= -.5
 
             # handle landing
             if self.rect.bottom >= rect.top and prev_rect.bottom <= rect.top:
                 if not ((self.rect.left <= rect.right and prev_rect.left >= rect.right) or (self.rect.right >= rect.left and prev_rect.right <= rect.left)):
-                    self.vY = 0
-                    self.rect.bottom = rect.top
-                    self.vX = 0
+                    if not self.hasBounced:
+                        self.vY *= -.75
+                        self.vX *= .75
+                        self.hasBounced = True
+                    else:
+                        self.vY = 0
+                        self.rect.bottom = rect.top
+                        self.vX = 0
 
 class AmmoPickup(Pickup):
     def __init__(self, x, y, direction, vY):

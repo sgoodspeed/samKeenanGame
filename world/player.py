@@ -5,6 +5,50 @@ from projectiles import *
 from core.settings import *
 from core.level import DirtyTile
 
+from anim import Animation, AnimationFrames
+from core.spritesheet import SpriteSheet
+
+class PlayerAnimation(Animation):
+    _rows = {"still": 0,
+             "left": 2,
+             "right": 1,
+             "jump": 5,
+             "hurt": (0,3)}
+
+    def __init__(self, player, image, duration):
+        self.player = player
+        self.y = self._rows["still"]
+    
+        spritesheet = SpriteSheet(image, (2, 9), colorkey=(255,255,255))
+        frames = [ (duration, 0),
+                   (duration, 1)]
+
+        Animation.__init__(self, spritesheet, frames)
+
+    def update(self, dt):
+        self.time += dt
+        
+        if self.player.thrown:
+            self.x, self.y = self._rows["hurt"]
+        else:
+            if self.player.direction == 1:
+                if self.player.jumping > 0:
+                    self.x = self.get_frame_data(self.time) 
+                    self.y = self._rows["jump"]
+                else:
+                    self.x = self.get_frame_data(self.time)
+                    self.y = self._rows["right"]
+            elif self.player.direction == -1:
+                if self.player.jumping > 0:
+                    self.x = self.get_frame_data(self.time) 
+                    self.y = self._rows["jump"]
+                else:
+                    self.x = self.get_frame_data(self.time)
+                    self.y = self._rows["left"]
+            else:
+                self.x = self.get_frame_data(self.time)
+                self.y = self._rows["still"]
+
 class Player(Sprite):
     vX = 0
     vY = 0
@@ -15,17 +59,7 @@ class Player(Sprite):
     
     def __init__(self):
         Sprite.__init__(self)
-        self.thrown = False
-
-        self.rect = Rect(PLAYER_START, PLAYER_SIZE) # Build the player's rect
-        self.cleanRect = Rect(self.rect.bottomleft, (10,10))
-
-        self.image = Surface(self.rect.size) # Give the player a surface the size of the rect
-        self.image.fill((0,0,0)) # Fill the surface with black
-        self.image.set_colorkey((0,0,0)) # Probably don't want this later
-
-        draw.rect(self.image, (0,0,255), self.image.get_rect()) # This draws the visible blue rectangle (We only draw this image once. Then, the spritegroup that Player is a part of moves the player's Surface (which has the image we just drew) around)
-        
+        self.thrown = False        
         self.direction = 1
         
         self.bullets = Group()
@@ -35,10 +69,18 @@ class Player(Sprite):
         self.facing = 1
         self.timer = 0
         self.doorChange = False
+        self.direction = None
+        self.cleaning = False
+        self.cleaningSlowdown = 1
         
+        self.anim = PlayerAnimation(self, "mario", 80)
+        self.image = self.anim.get_current_frame()
+        self.rect = self.image.get_rect()
+        
+        self.cleanRect = Rect(self.rect.bottomleft, (10,10))
 
     def move(self, direction):
-        self.vX = direction * PLAYER_SPEED # This doesn't actually MOVE anything, it just sets velocity
+        self.vX = direction * PLAYER_SPEED * self.cleaningSlowdown # This doesn't actually MOVE anything, it just sets velocity
         if direction !=0:
             self.facing = self.direction
 
@@ -66,6 +108,9 @@ class Player(Sprite):
         return touching
 
     def update(self, dT, level):
+        self.anim.update(dT)
+        self.image = self.anim.get_current_frame()
+        
         dT = dT / 1000.0
         self.dT = dT #For use in meleeAttack
         
@@ -82,7 +127,7 @@ class Player(Sprite):
         self.rect.clamp_ip(level.bounds)  
         
         for sprite in self.touches(level.solidTiles):
-            if isinstance(sprite, DirtyTile):
+            if isinstance(sprite, DirtyTile) and self.cleaning:
                 sprite.clean()
                 
             rect = sprite.rect 
@@ -125,7 +170,7 @@ class Player(Sprite):
                     
     def shoot(self):
         if self.ammo > 0:
-            bullet = Bullet(self.rect.x, self.rect.y, self.facing, 0)
+            bullet = Sponge(self.rect.x, self.rect.y, self.facing, SPONGE_THROW_SPEED)
             self.bullets.add(bullet)
             self.ammo -= 1
             

@@ -8,7 +8,7 @@ from core.input import KeyListener, MouseListener
 from core.app import Application
 from core.hud import *
 from world.player import *
-from world.enemies import *
+from core.enemies import *
 from core.level import *
 from pygame.sprite import *
 from core.cameraJunk.camera import *
@@ -43,6 +43,9 @@ class PlayerController(KeyListener, MouseListener):
                 self.mel = True
             elif event.key == K_UP and not self.player.doorChange:
                 self.player.doorChange = True
+            elif event.key == K_DOWN:
+                self.player.cleaning = True
+                self.player.cleaningSlowdown = CLEAN_SLOWDOWN
                 
             
     def update(self, dT):
@@ -71,6 +74,9 @@ class PlayerController(KeyListener, MouseListener):
             self.player.vX = 0
         elif event.key == K_UP and self.player.doorChange:
             self.player.doorChange = False
+        elif event.key == K_DOWN and self.player.cleaning:
+            self.player.cleaning = False
+            self.player.cleaningSlowdown = 1
 
 
 # controls/sound.py
