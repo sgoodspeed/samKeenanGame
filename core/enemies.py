@@ -106,7 +106,6 @@ class Enemy(Sprite):
     def die(self, level, dT=0):
         if not self.dying:
             self.dying = True
-            level.ammo.add(Sponge(self.rect.right,self.rect.top, self.direction, SPONGE_THROW_SPEED)
         self.timer += dT
         if self.timer > 1500:
             self.kill()
@@ -264,8 +263,45 @@ class Frank(Enemy):
             return True
         else:
             return False
-            
 
+
+class GoblinAnimation(Animation):
+    _rows = {"left": 0,
+             "right": 1,
+             "rush_left": (0,3),
+             "rush_right": (0,2),
+             "pause": (0,4)}
+
+    def __init__(self, enemy, image, duration):
+        self.enemy = enemy
+        self.y = self._rows["left"]
+    
+        spritesheet = SpriteSheet(image, (2, 5), colorkey=(0,255,0))
+        frames = [ (duration, 0),
+                   (duration, 1)]
+
+        Animation.__init__(self, spritesheet, frames)
+
+    def update(self, dt):
+        self.time += dt
+
+        if self.enemy.pick == 0:
+            self.x,self.y = self._rows["pause"]
+            
+        elif self.enemy.direction == 1:
+             if self.enemy.rush:
+                self.x, self.y = self._rows["rush_right"]
+             else:
+                self.x = self.get_frame_data(self.time)
+                self.y = self._rows["right"]
+        
+        elif self.enemy.direction == -1:
+            if self.enemy.rush:
+                self.x, self.y = self._rows["rush_left"]
+            else:
+                self.x = self.get_frame_data(self.time)
+                self.y = self._rows["left"]
+      
 class Goblin(Enemy):
     damage = GOB_DAMAGE
     health = GOB_HEALTH
@@ -279,25 +315,26 @@ class Goblin(Enemy):
     def __init__(self, startPos):
         Enemy.__init__(self, startPos)
         self.melee = False
+        self.pick = 0
         
-        self.rect = Rect(startPos, (32,32))
-        self.image = Surface(self.rect.size)
+        self.anim = GoblinAnimation(self, "goblin", 160)
+        self.image = self.anim.get_current_frame()
+        self.rect = self.image.get_rect()
         self.rect.center = self.startPos
         
         self.leftBound = self.rect.left - self.boundSize
         self.rightBound = self.rect.right + self.boundSize
         
         self.timer = 0
-        self.state = "roaming"
         self.attacking = False
-        self.pick = 0
         self.attackTimer = 0
         self.rush = False
 
 
     def update(self, dT, level, player):
         self.timer += dT
-        
+        self.anim.update(dT)
+        self.image = self.anim.get_current_frame()
         
         
         if self.timer >3000:

@@ -120,6 +120,8 @@ class Player(Sprite):
         self.anim.update(dT)
         self.image = self.anim.get_current_frame()
         
+        self.level = level
+        
         dT = dT / 1000.0
         self.dT = dT #For use in meleeAttack
         
@@ -174,7 +176,6 @@ class Player(Sprite):
             self.meleeGroup.update(dT)
                       
     def shoot(self):
-        print self.ammo
         if self.ammo > 0:
             if self.facing == 1:
                 bullet = Sponge(self.rect.right,self.rect.top, self.facing, SPONGE_THROW_SPEED)
@@ -182,9 +183,8 @@ class Player(Sprite):
             if self.facing == -1:
                 bullet = Sponge(self.rect.left,self.rect.top, self.facing, SPONGE_THROW_SPEED)
             else:
-                bullet = Sponge(self.rect.left,self.rect.top,self.facing,  SPONGE_THROW_SPEED)
+                bullet = Sponge(self.rect.left,self.rect.top, self.facing, SPONGE_THROW_SPEED)
             self.bullets.add(bullet)
-            print self.bullets
             self.ammo -= 1
             
             

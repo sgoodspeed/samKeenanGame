@@ -6,25 +6,22 @@ HUD_HEIGHT = 40
 
 ### TILES
 TILE_SIZE = T_W, T_H = 32, 32
-TILE_MAP_COORDS = { "~": (395,236),
-                    "%": (385,289),
-                    ".": (192,96),
-                    "&": (32,32),
-                    "o": (0,0),
-                    "D": (50,55),
-                    ",": (69,69),
-                    "CLEAN1": (96,96),
-                    "OPENDOOR": (40,40)
+TILE_MAP_COORDS = { "~": (160,0),  # Red wall
+                    ".": (0,33),  # Stone floor
+                    "&": (64,0), # Window
+                    "o": (0,255), # Door (closed)
+                    "D": (32,255), # Door (open)
+                    ",": (128,32), # Wood floor w/ Ectoplasm
+                    "/": (0,0), # Wood floor cleaned
                     }
-TILE_SOLIDS = [ ".", 
-                "&", 
-                "%",
-                ","
+TILE_SOLIDS = [ ".",  
+                ",",
+                "/"
                 ]
 
 DIRTY_TILES = [","]
 
-DIRTY_TILES_CLEAN = {",": "CLEAN1"}
+DIRTY_TILES_CLEAN = {",": "/"}
 
 DOOR = "o"
 OPENDOOR = "D"

@@ -193,9 +193,6 @@ class Game(Application):
         self.playerGroup.update(dT, self.currLevel)
         self.currLevel.enemies.update(dT, self.currLevel, self.player)
         
-        self.currLevel.ammo.update(dT, self.currLevel)
-
-        
             
     
     def draw(self, screen):
@@ -203,13 +200,14 @@ class Game(Application):
         if not self.changing:
             self.gameArea.fill((0,0,0))
             self.cam.draw_background(self.gameArea, self.currLevel.background)
-            self.cam.draw_sprite(self.gameArea, self.player)
+            self.cam.draw_sprite_group(self.gameArea, self.currLevel.dirtyTiles)
+            self.cam.draw_sprite_group(self.gameArea, self.currLevel.doors)
+            self.cam.draw_sprite_group(self.gameArea, self.currLevel.ammo)
             self.cam.draw_sprite_group(self.gameArea, self.player.bullets)
             self.cam.draw_sprite_group(self.gameArea,self.player.meleeGroup)
             self.cam.draw_sprite_group(self.gameArea, self.currLevel.enemies)
-            self.cam.draw_sprite_group(self.gameArea, self.currLevel.ammo)
-            self.cam.draw_sprite_group(self.gameArea, self.currLevel.dirtyTiles)
-            self.cam.draw_sprite_group(self.gameArea, self.currLevel.doors)
+            self.cam.draw_sprite(self.gameArea, self.player)
+
         pygame.display.flip() # Refresh the screen
         
         self.gameHud.hudDraw(self.player.health)

@@ -17,7 +17,6 @@ class Pickup(Sprite):
         return touching
 
     def update(self, dT, level):        
-        
         self.vY -= dT * GRAVITY_SPEED
         dX = self.vX * dT
         dY = -self.vY * dT
