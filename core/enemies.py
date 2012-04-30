@@ -99,7 +99,7 @@ class Enemy(Sprite):
     def die(self, level, dT=0):
         if not self.dying:
             self.dying = True
-            level.ammo.add(Sponge(self.rect.x, self.rect.y, self.direction, 300))
+            level.ammo.add(Sponge(self.rect.right,self.rect.top, self.direction, SPONGE_THROW_SPEED)
         self.timer += dT
         if self.timer > 1500:
             self.kill()
