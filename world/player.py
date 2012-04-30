@@ -9,19 +9,25 @@ from anim import Animation, AnimationFrames
 from core.spritesheet import SpriteSheet
 
 class PlayerAnimation(Animation):
-    _rows = {"still": 0,
-             "left": 2,
-             "right": 1,
-             "jump": 5,
-             "hurt": (0,3)}
+    _rows = {"still_right": 0,
+            "still_left": 1,
+             "right": 2,
+             "left": 3,
+             "hurt": (0,4),
+             "block": 5,
+             "jump": (0,6),
+             "melee": (0,7),
+             "_blank_": (0,8),
+             "throw_right": 9,
+             "throw_left": 10}
 
     def __init__(self, player, image, duration):
         self.player = player
-        self.y = self._rows["still"]
+        self.y = self._rows["still_right"]
     
-        spritesheet = SpriteSheet(image, (2, 9), colorkey=(255,255,255))
-        frames = [ (duration, 0)]
-                   #(duration, 1)]
+        spritesheet = SpriteSheet(image, (2, 11), colorkey=(0,255,0))
+        frames = [ (duration, 0),
+                   (duration, 1)]
 
         Animation.__init__(self, spritesheet, frames)
 
@@ -33,21 +39,23 @@ class PlayerAnimation(Animation):
         else:
             if self.player.direction == 1:
                 if self.player.jumping > 0:
-                    self.x = self.get_frame_data(self.time) 
-                    self.y = self._rows["jump"]
+                    self.x, self.y = self._rows["jump"]
                 else:
                     self.x = self.get_frame_data(self.time)
                     self.y = self._rows["right"]
             elif self.player.direction == -1:
                 if self.player.jumping > 0:
-                    self.x = self.get_frame_data(self.time) 
-                    self.y = self._rows["jump"]
+                    self.x, self.y = self._rows["jump"]
                 else:
                     self.x = self.get_frame_data(self.time)
                     self.y = self._rows["left"]
             else:
-                self.x = self.get_frame_data(self.time)
-                self.y = self._rows["still"]
+                if self.player.facing == 1:
+                    self.x = self.get_frame_data(self.time)
+                    self.y = self._rows["still_right"]
+                else:
+                    self.x = self.get_frame_data(self.time)
+                    self.y = self._rows["still_left"]
 
 class Player(Sprite):
     vX = 0
@@ -72,8 +80,9 @@ class Player(Sprite):
         self.direction = None
         self.cleaning = False
         self.cleaningSlowdown = 1
+        self.dead = False
         
-        self.anim = PlayerAnimation(self, "mario", 80)
+        self.anim = PlayerAnimation(self, "player", 160)
         self.image = self.anim.get_current_frame()
         self.rect = self.image.get_rect()
         
@@ -163,11 +172,7 @@ class Player(Sprite):
         
         if self.meleeGroup is not None:
             self.meleeGroup.update(dT)
-                
-                    
-                    
-
-                    
+                      
     def shoot(self):
         if self.ammo > 0:
             if self.facing == 1:
@@ -181,14 +186,13 @@ class Player(Sprite):
             
             
     def meleeAttack(self):
-        
         self.melee = True
         if self.melee:
             self.attack = MelRect(self)
             self.meleeGroup.add(self.attack)
             self.timer = 0
 
-    def takeDamage(self,damageAmount):
+    def takeDamage(self, damageAmount):
         self.health-=damageAmount
         if self.health <=0:
-            pass
+            self.dead = True

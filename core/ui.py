@@ -19,16 +19,17 @@ class UpdateText(object):
  
 # This is used for the game over text, and should be used for the Pause text
 class InfoText(object):
-    def __init__(self, content, size = 80, color = (255, 255, 255)):
+    def __init__(self, content, size = 80, color = (255, 255, 255), v_offset = 0):
         self.content = content
         self.size = size
         self.color = color
+        self.v_offset = int(v_offset)
 
     def draw(self, screen):
         font = pygame.font.Font(None, self.size)
         self.text = font.render(self.content, True, self.color)
         
         loc = self.text.get_rect()
-        loc.center = screen.get_rect().center
+        loc.center = screen.get_rect().center[0], screen.get_rect().center[1] + self.v_offset
         
         screen.blit(self.text, loc)

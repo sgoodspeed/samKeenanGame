@@ -122,6 +122,7 @@ class Level(object):
         data = f.read().replace("\r", "").strip().split("\n")
         f.close()
         
+        self.data = data
         self.index = index	
         self.doors = []
         self.name = name

@@ -14,6 +14,7 @@ from pygame.sprite import *
 from core.cameraJunk.camera import *
 from world.door import Door
 from core.collisions import collisionCheck
+from core.level import createEnemies
 
 
 
@@ -114,9 +115,9 @@ class Game(Application):
         self.check = False
         self.fadeAlpha = 255
         
-        self.fadeScreen = Surface(self.gameArea.get_size())
-        self.fadeScreen.fill((0,0,0))
-        self.fadeScreen.set_alpha(0)
+        #self.fadeScreen = Surface(self.gameArea.get_size())
+        #self.fadeScreen.fill((0,0,0))
+        #self.fadeScreen.set_alpha(0)
                 
         # Create the sound effects controller and give it a keyboard listener as well
         sc = SfxController(self.sounds, self)
@@ -138,6 +139,11 @@ class Game(Application):
 
         #Camera init
         self.cam = Camera(self.player,self.currLevel.bounds,self.gameArea.get_size())
+    
+    def setup_game(self):
+        self.player.__init__()
+        for level in self.levels:
+            level.enemies = createEnemies(level.data)
     
     def changeLevel(self, nextLevel,dT):
         self.timer += dT
@@ -168,6 +174,8 @@ class Game(Application):
     
 
     def update(self):
+        if self.player.dead:
+            self.state = "gameover"
         # update
         dT = min(200, self.clock.get_time())
         if self.changing:

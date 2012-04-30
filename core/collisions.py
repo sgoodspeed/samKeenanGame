@@ -31,7 +31,13 @@ def collisionCheck(game,player,level):
     
     if player.sprite.doorChange:
         for door, player in groupcollide(level.doors, player, False, False).items():
-         game.nextLevel = door.nextLevel
-         door.open()
-         game.changing = True
+            tilesReady = True
+            for tile in level.dirtyTiles:
+                if not tile.cleaned:
+                    tilesReady = False
+                    break
+            if len(level.enemies) == 0 and tilesReady:                     
+                game.nextLevel = door.nextLevel
+                door.open()
+                game.changing = True
         

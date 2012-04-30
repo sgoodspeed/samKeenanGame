@@ -17,9 +17,7 @@ class Enemy(Sprite):
     def __init__(self, startPos):
         Sprite.__init__(self)
         self.direction = randrange(-1,2,2)
-        self.rect = Rect(startPos,self.size)
-        self.image = Surface(self.rect.size)
-        draw.rect(self.image, (143,55,0), self.image.get_rect())
+        self.startPos = startPos
         self.onGround = False
         self.timer = 0
         self.dying = False
@@ -115,7 +113,7 @@ class RatAnimation(Animation):
         self.rat = rat
         self.y = self._rows["left"]
     
-        spritesheet = SpriteSheet(image, (2, 3), colorkey=(255,0,0))
+        spritesheet = SpriteSheet(image, (2, 3), colorkey=(0,255,0))
         frames = [ (duration, 0),
                    (duration, 1)]
 
@@ -144,9 +142,10 @@ class Rat(Enemy):
     
     def __init__(self, startPos):
         Enemy.__init__(self, startPos)
-        self.anim = RatAnimation(self, "rat", 80)
+        self.anim = RatAnimation(self, "rat", 160)
         self.image = self.anim.get_current_frame()
         self.rect = self.image.get_rect()
+        self.rect.center = self.startPos
         
     def update(self, dT, level, player):
         self.anim.update(dT)
@@ -156,6 +155,43 @@ class Rat(Enemy):
 
 
 
+class FrankAnimation(Animation):
+    _rows = {"right": 0,
+             "left": 1,
+             "jump": 2,
+             "hurt": 3,
+             "dead": 4}
+
+    def __init__(self, enemy, image, duration):
+        self.enemy = enemy
+        self.y = self._rows["left"]
+    
+        spritesheet = SpriteSheet(image, (3, 5), colorkey=(0,255,0))
+        frames = [ (duration, 0),
+                   (duration, 1)]
+
+        Animation.__init__(self, spritesheet, frames)
+
+    def update(self, dt):
+        self.time += dt
+        
+        if self.enemy.state == "roaming":
+            if self.enemy.direction == 1:
+                self.x = self.get_frame_data(self.time)
+                self.y = self._rows["right"]
+            else:
+                self.x = self.get_frame_data(self.time)
+                self.y = self._rows["left"]
+        elif self.enemy.state == "crouching":
+            self.x = 0
+            self.y = self._rows["jump"]
+        elif self.enemy.state == "jumping" or self.enemy.state == "falling":
+            self.x = 1
+            self.y = self._rows["jump"]
+            
+        if self.enemy.dying:
+            self.x = 0
+            self.y = self._rows["dead"]
 class Frank(Enemy):
     damage = FRANK_DAMAGE
     health = FRANK_HEALTH
@@ -166,14 +202,20 @@ class Frank(Enemy):
 
     def __init__(self, startPos):
         Enemy.__init__(self, startPos)
-        
-        self.leftBound = self.rect.left - self.boundSize
-        self.rightBound = self.rect.right + self.boundSize
         self.timer = 0
         self.state = "roaming"
         self.attacking = False
+        
+        self.anim = FrankAnimation(self, "frank", 160)
+        self.image = self.anim.get_current_frame()
+        self.rect = self.image.get_rect()
+        self.rect.center = self.startPos
+        
+        self.leftBound = self.rect.left - self.boundSize
+        self.rightBound = self.rect.right + self.boundSize
     def update(self, dT, level, player):
-
+        self.anim.update(dT)
+        self.image = self.anim.get_current_frame()
         if self.state == "roaming":
             Enemy.update(self, dT, level, player)
             if self.rect.left<self.leftBound:
@@ -230,8 +272,14 @@ class Goblin(Enemy):
     def __init__(self, startPos):
         Enemy.__init__(self, startPos)
         self.melee = False
+        
+        self.rect = Rect(startPos, (32,32))
+        self.image = Surface(self.rect.size)
+        self.rect.center = self.startPos
+        
         self.leftBound = self.rect.left - self.boundSize
         self.rightBound = self.rect.right + self.boundSize
+        
         self.timer = 0
         self.state = "roaming"
         self.attacking = False
@@ -261,7 +309,10 @@ class Goblin(Enemy):
         
         
         if abs(self.distance)<400:
-            self.direction = self.distance / abs(self.distance)
+            if self.distance != 0:
+                self.direction = self.distance / abs(self.distance)
+            else:
+                self.direction = 1
             self.directed = True
             if abs(self.distance)<100:
                 self.melAttack()

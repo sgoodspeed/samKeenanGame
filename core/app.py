@@ -14,24 +14,30 @@ class SoundManager(object):
 class Application(object):
     hudRect = ((0,0,SCR_W,HUD_HEIGHT))
     gameRect = ((0,40,SCR_W,SCR_H-HUD_HEIGHT))
+    
     SCREEN_FLAGS = DOUBLEBUF|HWSURFACE|SRCALPHA
+    
     pause_key = K_p
-    paused_text = "Press Space to Resume"
+    start_key = K_SPACE
     restart_key = K_r
-    gameover_msg = "Game Over!"
-    is_gameover = False
-
+    
+    paused_msg = "Press <Space> to resume."
+    menu_msg = "Press <Space> to play!"
+    gameover_msg = "GAAAAAAAME OVEEEEER FUCKING NEEEEERD!!1!"
+    restart_msg = "Press <R> to restart."
+    
 
     def __init__(self):
         pygame.init()
-        #Scree init
+        # Screen init
         self.screen = pygame.display.set_mode(SCREEN_SIZE, self.SCREEN_FLAGS)
-        #Subsurfaces
+        
+        # Subsurfaces
         self.hud = self.screen.subsurface(self.hudRect)
-        
         self.gameArea = self.screen.subsurface(self.gameRect)
-
         
+        # Set state
+        self.state = "menu"
 
         #Clock
         self.clock = pygame.time.Clock()
@@ -39,93 +45,118 @@ class Application(object):
         pygame.display.set_caption(TITLE)
         
         font = pygame.font.Font(None, 40)
-        self._paused_text = font.render(self.paused_text, True, (255,255,255), (0,0,0))
-        self._paused_text.set_colorkey((0,0,0))
-
-        self.paused = False
-        self.bounds = self.screen.get_rect()
+        self.pause_text = InfoText(self.paused_msg, 40)
         self.gameover_text = InfoText(self.gameover_msg, 40)
+        self.menu_text = InfoText(self.menu_msg, 40)
+        self.restart_text = InfoText(self.restart_msg, 40, v_offset=50)
+        
+        #self.paused_text.set_colorkey((0,0,0))
+
+        
+        # Set bounds
+        self.bounds = self.screen.get_rect()
         
         # Setup managers
         self.input = InputManager()
-        self.sounds = SoundManager()
-
-    def pause(self):
-        self.paused = True
-        self.on_pause()
-        self._draw_pause()
-
-    def _draw_pause(self):
-        overlay = pygame.Surface(self.screen.get_size())
-        overlay.set_alpha(200)
-        overlay.fill((0,0,0))
-        self.screen.blit(overlay, (0,0))
-
-        loc = self._paused_text.get_rect()
-        loc.center = self.screen.get_rect().center
-        self.screen.blit(self._paused_text, loc)
-        pygame.display.flip()
-    
-    def do_gameover(self):
-        self.is_gameover = True
-
-        overlay = pygame.Surface(self.screen.get_size())
-        overlay.set_alpha(200)
-        overlay.fill((0,0,0))
-        self.screen.blit(overlay, (0,0))
-
-        self.gameover_text.draw(self.screen)
-        pygame.display.flip()
-
-
-    def resume(self):
-        self.paused = False
-        self.on_resume()
+        self.sounds = SoundManager()       
 
     def quit(self):
         self.done = True
 
-    def step(self):
-        self.clock.tick(FPS)
+    def overlay(self):
+        overlay = pygame.Surface(self.screen.get_size())
+        overlay.fill((0,0,0))
+        overlay.set_alpha(100)
+        self.screen.blit(overlay, (0,0))
 
-        # Pause if screen is hidden
-        if not pygame.display.get_active() and not self.paused:
-            self.pause()
-
-        # handle events
-        for event in pygame.event.get():
+    def quit_or_pause(self, events):
+        for event in events:
             if event.type == QUIT:
                 self.quit()
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 self.quit()
-            elif event.type == KEYDOWN and event.key == self.pause_key and not self.is_gameover:
-                if self.paused:
-                    self.resume()
-                else:
-                    self.pause()
-            else:
-                self.input.handle_event(event) #Otherwise, pass the event to the input manager, which will then pass it off to the appropriate controller.
+            elif event.type == KEYDOWN and event.key == self.pause_key:
+                if self.state == "play":
+                    self.state = "paused"
+            elif event.type == KEYDOWN and event.key == self.start_key:
+                if self.state == "paused":
+                    self.state = "play"
 
-         # update if not paused
-        if not self.paused and not self.is_gameover:
-            self.update()
-            self.draw(self.screen)
-            pygame.display.flip()
+    
+    def menu(self):        
+        self.overlay()
+
+        self.menu_text.draw(self.screen)
+        
+        self.quit_or_pause(self.events)
+
+        for event in self.events:
+            if event.type == KEYDOWN and event.key == self.start_key:
+                self.state = "start_game"
+                
+    def start_game(self):
+        self.setup_game()
+        self.state = "play"
+        
+    def play(self):
+        self.quit_or_pause(self.events)
+        
+        for event in self.events:
+            self.input.handle_event(event) # Pass the event to the input manager, which will then pass it off to the appropriate controller.
+        
+        self.update()
+        self.draw(self.screen)
+        
+    def pause(self):
+        self.overlay()
+        self.pause_text.draw(self.screen)
+        self.quit_or_pause(self.events)
+
+    def gameover(self):
+        self.quit_or_pause(self.events)
+        self.overlay()
+        self.gameover_text.draw(self.screen)
+        self.restart_text.draw(self.screen)
+        
+        for event in self.events:
+            if event.type == KEYDOWN and event.key == self.restart_key:
+                self.state = "menu"
+
+    def step(self):
+        self.clock.tick(FPS)
+        self.events = pygame.event.get()
+
+        if self.state == "menu":
+            self.menu()
+       
+        if self.state == "start_game":
+            self.start_game()
+        
+        if self.state == "play":
+            # Pause if screen is hidden
+            if not pygame.display.get_active() and not self.paused:
+                self.state = "paused"
+                return
+            else:
+                self.play()
+        
+        if self.state == "paused":
+            self.pause()
+        
+        if self.state == "gameover":
+            self.gameover()
+        
+        pygame.display.flip()
+            
             
 
 
     def run(self):
         self.done = False
         self.clock = pygame.time.Clock()
-        self.on_start()
         while not self.done:
             self.step()
-        self.on_quit()       
             
+    def setup_game(self): pass
     def update(self): pass
     def draw(self, screen): pass
-
-    def on_resume(self): pass
-    def on_pause(self): pass
-    def on_start(self): pass
-    def on_quit(self): pass
