@@ -85,6 +85,7 @@ class Player(Sprite):
         self.anim = PlayerAnimation(self, "player", 160)
         self.image = self.anim.get_current_frame()
         self.rect = self.image.get_rect()
+        self.rect.center = PLAYER_START
         
         self.cleanRect = Rect(self.rect.bottomleft, (10,10))
 
