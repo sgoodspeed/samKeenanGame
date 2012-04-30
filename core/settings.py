@@ -99,7 +99,7 @@ MELEE_SIZE = (100,10)
 ### PICKUPS
 AMMO_SIZE = (T_W*.4, T_H*.4)
 PICKUP_THROW_SPEED = 50
-AMMO_AMOUNT = 15
+AMMO_AMOUNT = 1
 
 ### MAIN
 ## How this works: 

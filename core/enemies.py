@@ -302,7 +302,7 @@ class Goblin(Enemy):
         
         if self.timer >3000:
             self.pick = randrange(0,3)
-            print self.pick
+            #print self.pick
             self.directed = False
             self.timer = 0
         if self.pick == 0:
