@@ -144,6 +144,11 @@ class Game(Application):
         self.player.__init__()
         for level in self.levels:
             level.enemies = createEnemies(level.data)
+            for tile in level.dirtyTiles:
+                tile.cleaned = False
+                tile.image = tile.dirtyImage
+        self.currLevel = levels[0]
+        
     
     def changeLevel(self, nextLevel,dT):
         self.timer += dT

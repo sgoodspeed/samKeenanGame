@@ -49,10 +49,13 @@ class InfoBlock(object):
         
         offset = 0
         increment = 50
-        loc = screen.get_rect().topleft   
+        
+        loc = self.text.get_rect()
+        loc.center = self.text.get_rect().center
 
         for line in self.lines:
-            self.text.blit(font.render(line, True, self.color), (loc[0],loc[1]+offset))
+            text_line = font.render(line, True, self.color)
+            self.text.blit(text_line, (loc[0],loc[1]+offset))
             offset += increment
         
-        screen.blit(self.text, screen.get_rect().center)
+        screen.blit(self.text, screen.get_rect().topleft)

@@ -51,6 +51,7 @@ class DirtyTile(Tile):
         Tile.__init__(self, tileImage, True, x, y, tileType)
         self.cleanImage = cleanImage
         self.cleaned = False
+        self.dirtyImage = tileImage
 
     def clean(self):
         if not self.cleaned:
