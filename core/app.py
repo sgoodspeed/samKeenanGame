@@ -2,7 +2,7 @@
 
 import pygame
 from pygame.locals import *
-from ui import InfoText
+from ui import InfoText, InfoBlock
 from core.input import InputManager, KeyListener, MouseListener
 from core.settings import *
 
@@ -22,7 +22,7 @@ class Application(object):
     restart_key = K_r
     
     paused_msg = "Press <Space> to resume."
-    menu_msg = "Press <Space> to play!"
+    menu_msg = "Press <Space> to play!\nControls:\nArrow keys to move."
     gameover_msg = "GAAAAAAAME OVEEEEER FUCKING NEEEEERD!!1!"
     restart_msg = "Press <R> to restart."
     
@@ -47,7 +47,7 @@ class Application(object):
         font = pygame.font.Font(None, 40)
         self.pause_text = InfoText(self.paused_msg, 40)
         self.gameover_text = InfoText(self.gameover_msg, 40)
-        self.menu_text = InfoText(self.menu_msg, 40)
+        self.menu_text = InfoBlock(self.menu_msg, 40)
         self.restart_text = InfoText(self.restart_msg, 40, v_offset=50)
         
         #self.paused_text.set_colorkey((0,0,0))
