@@ -32,6 +32,10 @@ class Enemy(Sprite):
         return touching
 
     def update(self, dT, level, player):
+        self.move(dT, level, player)
+        self.collide(level)
+
+    def move(self, dT, level, player):
         if self.dying:
             self.die(level, dT)
         else:
@@ -46,23 +50,26 @@ class Enemy(Sprite):
         dY = -self.vY * dT
     
         # update position
-        prev_rect = self.rect
+        self.prev_rect = self.rect
+        #print dX,dY
         self.rect = self.rect.move(dX, dY)
         if self.rect.x < 0 or self.rect.x > level.bounds.right:
             self.direction*=-1
         self.rect.clamp_ip(level.bounds)   # temp error
 
+    def collide(self, level):
+        # update position
         for sprite in self.touches(level.solidTiles):
             rect = sprite.rect 
         
             # collide with walls
             if (rect.top < self.rect.bottom-2):
-                if self.rect.left <= rect.right and prev_rect.left >= rect.right:
+                if self.rect.left <= rect.right and self.prev_rect.left >= rect.right:
                     self.rect.left = rect.right+1
                     self.direction *=-1
                     self.directed = True
                 
-                if self.rect.right >= rect.left and prev_rect.right <= rect.left:
+                if self.rect.right >= rect.left and self.prev_rect.right <= rect.left:
                     self.rect.right = rect.left-1
                     self.direction *=-1
                     self.directed = True
@@ -75,8 +82,8 @@ class Enemy(Sprite):
 
             # handle landing
             self.onGround = False
-            if self.rect.bottom >= rect.top and prev_rect.bottom <= rect.top:
-                if not ((self.rect.left <= rect.right and prev_rect.left >= rect.right) or (self.rect.right >= rect.left and prev_rect.right <= rect.left)):
+            if self.rect.bottom >= rect.top and self.prev_rect.bottom <= rect.top:
+                if not ((self.rect.left <= rect.right and self.prev_rect.left >= rect.right) or (self.rect.right >= rect.left and self.prev_rect.right <= rect.left)):
                     self.vY = 0
                     self.rect.bottom = rect.top
                     self.onGround = True
@@ -284,17 +291,18 @@ class Goblin(Enemy):
         self.state = "roaming"
         self.attacking = False
         self.pick = 0
+        self.attackTimer = 0
+        self.rush = False
 
 
     def update(self, dT, level, player):
         self.timer += dT
         
-        if self.melee:
-            self.attackTimer +=dT
-            if self.attackTimer >= 700:
-                self.melee = False
+        
+        
         if self.timer >3000:
             self.pick = randrange(0,3)
+            print self.pick
             self.directed = False
             self.timer = 0
         if self.pick == 0:
@@ -307,16 +315,13 @@ class Goblin(Enemy):
         Enemy.update(self,dT,level,player)
         self.facing = self.direction
         
-        
-        if abs(self.distance)<400:
-            if self.distance != 0:
-                self.direction = self.distance / abs(self.distance)
-            else:
-                self.direction = 1
-            self.directed = True
-            if abs(self.distance)<100:
-                self.melAttack()
-            
+        if abs(self.distance) <200:
+            if not self.rush:
+                self.speed*=2
+                self.rush = True
+        if self.rush and abs(self.distance) >200:
+            self.speed = GOB_SPEED
+            self.rush = False
             
                     
     def moveLeft(self):
@@ -331,11 +336,27 @@ class Goblin(Enemy):
     def pause(self):
         if not self.directed:
             self.direction = 0
+##
+##class Ghost(Enemy):
+##    damage = GHOST_DAMAGE
+##    health = GHOST_HEALTH
+##    size = GHOST_SIZE
+##    speed = GHOST_SPEED
+##    boundSize = GHOST_BOUNDS
+##    attackDist = GHOST_ATTACK_DIST
+##
+##    def __init__(self, startPos):
+##        Enemy.__init__(self, startPos)
+##        self.boundsLeft = 
+##        #self.anim = GhostAnimation(self, "ghost", 160)
+##        #self.image = self.anim.get_current_frame()
+##        self.rect = self.image.get_rect()
+##        self.rect.center = self.startPos
+##        
+##    def update(self,startpos):
+##        
+##        self.move(dT, level, player)
 
-    def melAttack(self):
-        if not self.melee:
-            self.melee = True
-        if self.melee:
-            self.attack = MelRect(self)
-            self.meleeGroup.add(self.attack)
-            self.attackTimer = 0
+    
+
+   
