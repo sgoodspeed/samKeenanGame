@@ -72,7 +72,7 @@ class Player(Sprite):
         
         self.bullets = Group()
         self.meleeGroup = GroupSingle()
-        self.ammo = 9001
+        self.ammo = 8
         self.health = 100
         self.facing = 1
         self.timer = 0
@@ -174,14 +174,17 @@ class Player(Sprite):
             self.meleeGroup.update(dT)
                       
     def shoot(self):
+        print self.ammo
         if self.ammo > 0:
             if self.facing == 1:
                 bullet = Sponge(self.rect.right,self.rect.top, self.facing, SPONGE_THROW_SPEED)
-            elif self.facing == -1:
+                
+            if self.facing == -1:
                 bullet = Sponge(self.rect.left,self.rect.top, self.facing, SPONGE_THROW_SPEED)
             else:
-                bullet = Sponge(self.rect.x,self.rect.y,self.facing,  SPONGE_THROW_SPEED)
+                bullet = Sponge(self.rect.left,self.rect.top,self.facing,  SPONGE_THROW_SPEED)
             self.bullets.add(bullet)
+            print self.bullets
             self.ammo -= 1
             
             

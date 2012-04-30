@@ -22,8 +22,11 @@ def collisionCheck(game,player,level):
             if not sponge.hasBounced:
                 sponge.hurt(enemy, level, player.sprite)
 
-    for ammo in groupcollide(level.ammo, player, True, False):
-        player.sprite.ammo += AMMO_AMOUNT
+    for sponge in groupcollide(player.sprite.bullets, player, False, False):
+        if sponge.hasBounced:
+            player.sprite.ammo += AMMO_AMOUNT
+            sponge.kill()
+            
      
     for melee, enemies in groupcollide(player.sprite.meleeGroup, level.enemies, False,False).items():
         for enemy in enemies:
