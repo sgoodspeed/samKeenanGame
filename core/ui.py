@@ -2,6 +2,7 @@
 
 import pygame
 from pygame.locals import *
+from pygame import Surface
 
 # This is used for score and lives.
 class UpdateText(object):
@@ -33,3 +34,25 @@ class InfoText(object):
         loc.center = screen.get_rect().center[0], screen.get_rect().center[1] + self.v_offset
         
         screen.blit(self.text, loc)
+        
+class InfoBlock(object):
+    def __init__(self, lines, size = 80, color = (255, 255, 255), v_offset = 0):
+        self.lines = lines.split("\n")
+        self.size = size
+        self.color = color
+        self.v_offset = int(v_offset)
+
+    def draw(self, screen):
+        font = pygame.font.Font(None, self.size)
+        
+        self.text = Surface(screen.get_rect().size)
+        
+        offset = 0
+        increment = 50
+        loc = screen.get_rect().topleft   
+
+        for line in self.lines:
+            self.text.blit(font.render(line, True, self.color), (loc[0],loc[1]+offset))
+            offset += increment
+        
+        screen.blit(self.text, screen.get_rect().center)

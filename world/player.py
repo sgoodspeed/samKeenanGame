@@ -25,7 +25,7 @@ class PlayerAnimation(Animation):
         self.player = player
         self.y = self._rows["still_right"]
     
-        spritesheet = SpriteSheet(image, (2, 11), colorkey=(0,255,0))
+        spritesheet = SpriteSheet(image, (2, 11), colorkey=(255,255,255))
         frames = [ (duration, 0),
                    (duration, 1)]
 

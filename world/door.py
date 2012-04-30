@@ -15,5 +15,6 @@ class Door(Sprite):
         
     def draw(self, surface):
         surface.blit(self.image, (self.rect.topleft))
+    
     def open(self):
         self.image = self.openImage
