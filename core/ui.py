@@ -33,3 +33,20 @@ class InfoText(object):
         loc.center = screen.get_rect().center[0], screen.get_rect().center[1] + self.v_offset
         
         screen.blit(self.text, loc)
+        
+class InfoBlock(object):
+    def __init__(self, lines, size = 80, color = (255, 255, 255), v_offset = 0):
+        
+        self.lines = lines
+        self.size = size
+        self.color = color
+        self.v_offset = int(v_offset)
+
+    def draw(self, screen):
+        font = pygame.font.Font(None, self.size)
+        self.text = font.render(self.content, True, self.color)
+        
+        loc = self.text.get_rect()
+        loc.center = screen.get_rect().center[0], screen.get_rect().center[1] + self.v_offset
+        
+        screen.blit(self.text, loc)

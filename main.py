@@ -152,6 +152,8 @@ class Game(Application):
             self.fadeAlpha -= 10
             self.cam.draw_background_alpha(self.gameArea, self.currLevel.background, self.fadeAlpha)
             self.cam.draw_sprite_group_alpha(self.gameArea, self.currLevel.dirtyTiles, self.fadeAlpha)
+            self.cam.draw_sprite_group_alpha(self.gameArea, self.currLevel.doors, self.fadeAlpha)
+
             self.check = True
             
         if self.timer > 1500 and self.check:
@@ -167,6 +169,7 @@ class Game(Application):
             self.cam.draw_sprite_alpha(self.gameArea, self.player, 0)
             self.cam.draw_background_alpha(self.gameArea, self.currLevel.background, self.fadeAlpha)
             self.cam.draw_sprite_group_alpha(self.gameArea, self.currLevel.dirtyTiles, self.fadeAlpha)
+            self.cam.draw_sprite_group_alpha(self.gameArea, self.currLevel.doors, self.fadeAlpha)
             
         if self.timer > 3000:    
             self.timer = 0
@@ -206,6 +209,7 @@ class Game(Application):
             self.cam.draw_sprite_group(self.gameArea, self.currLevel.enemies)
             self.cam.draw_sprite_group(self.gameArea, self.currLevel.ammo)
             self.cam.draw_sprite_group(self.gameArea, self.currLevel.dirtyTiles)
+            self.cam.draw_sprite_group(self.gameArea, self.currLevel.doors)
         pygame.display.flip() # Refresh the screen
         
         self.gameHud.hudDraw(self.player.health)
