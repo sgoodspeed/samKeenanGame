@@ -43,6 +43,7 @@ class PlayerController(KeyListener, MouseListener):
                 self.mel = True
             elif event.key == K_UP and not self.player.doorChange:
                 self.player.doorChange = True
+                
             elif event.key == K_DOWN:
                 self.player.cleaning = True
                 self.player.cleaningSlowdown = CLEAN_SLOWDOWN

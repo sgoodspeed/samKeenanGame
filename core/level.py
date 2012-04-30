@@ -56,8 +56,7 @@ class DirtyTile(Tile):
         if not self.cleaned:
             self.cleaned = True
             self.image = self.cleanImage        
-        
-
+      
 
 ## Tilesheet class
 class TileSheet(object):
@@ -82,8 +81,8 @@ class TileSheet(object):
         solidTileGroup = Group()
         dirtyTileGroup = Group()
         doorGroup = Group()
-
-        
+        doorImage = self.tilemap.get(DOOR)
+        openImage = self.tilemap.get(OPENDOOR)
         # Loop through the .lvl file
         for y, row in enumerate(data):
             tileOffset = 0
@@ -102,10 +101,12 @@ class TileSheet(object):
                         tile = DirtyTile(tileImage, cleanImage, x*self.w-tileOffset, y*self.h, cell) # We need to assign a secondary image here where it says tileImage the second time that will display when it's cleaned
                         dirtyTileGroup.add(tile)
                     else:
-                        if cell == "o": # o = door
+                        if cell == DOOR: # o = door
                             nextLevel = row[x+1]
-                            door = Door(nextLevel, (x*self.w-tileOffset, y*self.h))
+                            door = Door(nextLevel, (x*self.w-tileOffset, y*self.h),doorImage,openImage)
                             doorGroup.add(door)
+                        
+                            
                         tile = Tile(tileImage, isSolid, x*self.w-tileOffset, y*self.h, cell)
                     if isSolid:
                         solidTileGroup.add(tile)

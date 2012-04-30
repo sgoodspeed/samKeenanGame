@@ -11,8 +11,10 @@ TILE_MAP_COORDS = { "~": (395,236),
                     ".": (192,96),
                     "&": (32,32),
                     "o": (0,0),
+                    "D": (50,55),
                     ",": (69,69),
-                    "CLEAN1": (96,96)
+                    "CLEAN1": (96,96),
+                    "OPENDOOR": (40,40)
                     }
 TILE_SOLIDS = [ ".", 
                 "&", 
@@ -23,6 +25,9 @@ TILE_SOLIDS = [ ".",
 DIRTY_TILES = [","]
 
 DIRTY_TILES_CLEAN = {",": "CLEAN1"}
+
+DOOR = "o"
+OPENDOOR = "D"
 
 ### PLAYER
 PLAYER_SIZE = PLY_W, PLY_H = T_W, T_H*2.2

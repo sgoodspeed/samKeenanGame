@@ -32,5 +32,6 @@ def collisionCheck(game,player,level):
     if player.sprite.doorChange:
         for door, player in groupcollide(level.doors, player, False, False).items():
          game.nextLevel = door.nextLevel
+         door.open()
          game.changing = True
         
