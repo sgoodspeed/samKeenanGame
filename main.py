@@ -147,7 +147,8 @@ class Game(Application):
             for tile in level.dirtyTiles:
                 tile.cleaned = False
                 tile.image = tile.dirtyImage
-        self.currLevel = levels[0]
+            for 
+        self.currLevel = self.levels[0]
         
     
     def changeLevel(self, nextLevel,dT):
