@@ -1,16 +1,19 @@
-Here we go, this is a game, we are gonna make it, woooo
+from obligatory_assignments import PostMortem
 
-OK I am just gonna write down the order of git commands here (probably these are also online?):
+# SUPER POST-MORTEM-GET
+
+What we were happy with:
+We managed to get a lot of stuff done and coded in a rather elegant fashion, I thought. Our basic game set-up is pretty readable, we managed to keep a good amount of unnecessary stuff out of our update loop, or at least we did up to the last week of crunch time. Our camera and collision code are mostly Alec's, but we understand it fully, and showed this by creating some worthwhile additions, such as fixing the collision stuff or creating alpha set functions in camera to create some pretty slick transitions. 
+
+We made good use of inheritance for enemies, and I think we're in a pretty good situation where if we were to continue with the project adding more new enemies would be a pretty simple procedure. Doors as well were pretty well-done, and I think that's a good example of a feature we kept plugging away at until it worked how we wanted. The functionality to work both ways, fade out, go back and forth through doors, lock until room was clean, and drawing them as 'open' to show you've already gone through are things we're pretty proud of.
+
+Overall I think we're most proud of the fact that, regardless of the complexity or simplicity of the feature we were implementing, we always tried to keep as much interdependence out of our methods, and we've ended up with a pretty re-usable engine as a result of this.
 
 
-git add . //the dot is for everything in the folder, I guess you can also just do one part
+What we weren't happy with:
 
-git commit -m "this is where a comment goes"
+We feel like basically what went wrong was polish stuff. In the last week we rushed through a lot of features and reading through the code now it's pretty clear which ones were worked on in the correct amount of time and which ones we rushed through and are not very pretty. For instance, sponges sometimes don't bounce. We never figured out why. That and some other weird things are sort of exemplary of how things broke down in the last week, we think. Most of the features implemented in the last week are just subtly glitchy, like sponges, or ugly, like our graphics.
 
-git push //this is the one that sends it to the site actually
+What we would do next:
 
-git stash //hides all the changes you've made locally
-
-git checkout ______ //designates which branch you are working on
-
-git checkout -b _______ //creates a branch, I am pretty sure?
+I think honestly we would roll back a few weeks to a point where the code worked a little better and spend some time re-implementing features that are sort of sloppy. Fix the sprite art so it's more pixelated and less hand drawn, and also so sprites don't clip. We wanted to design more levels, implement ghosts and boss fights, attainable powers... A lot of things we wanted to do. But, yeah, we created a pretty well-made game and despite some shortness of time at the end we're still quite proud of it.
